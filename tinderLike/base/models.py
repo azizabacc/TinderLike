@@ -4,4 +4,4 @@ from django.db import models
 
 class Users(models.Model):
 	name = models.CharField(max_length=100)
-	created = models.DateTimeField(auto_now_add=True)
+	created_at = models.DateTimeField(auto_now_add=True)

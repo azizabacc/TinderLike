@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from dotenv import dotenv_values
+import os
 
 config = dotenv_values(".env")
 
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'base',
 
+
 ]
 
 MIDDLEWARE = [
@@ -56,11 +58,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'tinderLike.urls'
-
+SETTINGS_PATH = os.path.normpath(os.path.dirname(__file__))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(SETTINGS_PATH, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

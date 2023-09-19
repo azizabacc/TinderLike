@@ -1,6 +1,7 @@
 from django.db import models
 
 class Users(models.Model):
+
     GENDER_CHOICES = [
         ('man', 'Man'),
         ('woman', 'Woman'),
@@ -32,3 +33,4 @@ class Likes(models.Model):
 class Messages(models.Model):
     body = models.TextField()
     id_like = models.ForeignKey(Likes, on_delete=models.CASCADE)
+

@@ -1,2 +1,6 @@
 .env
 tinderlike-env/
+tinderLike/api/__pycache__
+tinderLike/base/__pycache__
+tinderLike/tinderLike/__pycache__
+tinderLike/base/migrations/__pycache__

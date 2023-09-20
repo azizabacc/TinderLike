@@ -1,0 +1,45 @@
+
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Like or Dislike</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>My Dating App</h1>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="user-profile">
+            <div class="user-info">
+                <h2>{{ user.name }}</h2>
+                <p>Age: {{ user.age }}</p>
+                <p>Email: {{ user.email }}</p>
+                <p>Gender: {{ user.gender }}</p>
+            </div>
+            <div class="like-dislike-buttons">
+                <form method="post" action="{% url 'like'%}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="like">Like</button>
+                </form>
+                <form method="post" action="{% url 'like' %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="dislike">Dislike</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; {{ year }} My Dating App</p>
+    </footer>
+</body>
+</html>

@@ -1,11 +1,56 @@
-<!DOCTYPE html>
-<html>
-<body>
-{% for x in response %}
-{{response.text}}
-{% endfor %}
-<h1>Hello World!</h1>
-<p>Welcome to my first Django project!</p>
 
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dating</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>My Dating App</h1>
+            </div>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Matches</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h1>Find Your Perfect Match</h1>
+            <p>Start discovering interesting people near you.</p>
+            <a href="{% url 'login' %}" class="cta-button">Sign Up for Free</a>
+        </section>
+        
+        <section class="features">
+            <div class="feature">
+                <img src="{% static 'images/feature1.png' %}" alt="Feature 1">
+                <h2>Feature 1</h2>
+                <p>Description of Feature 1.</p>
+            </div>
+            <div class="feature">
+                <img src="{% static 'images/feature2.png' %}" alt="Feature 2">
+                <h2>Feature 2</h2>
+                <p>Description of Feature 2.</p>
+            </div>
+            <div class="feature">
+                <img src="{% static 'images/feature3.png' %}" alt="Feature 3">
+                <h2>Feature 3</h2>
+                <p>Description of Feature 3.</p>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; {{ year }} My Dating App</p>
+    </footer>
 </body>
 </html>

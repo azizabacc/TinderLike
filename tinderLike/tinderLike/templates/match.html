@@ -1,0 +1,46 @@
+
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>My Dating App</h1>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="matches">
+            <h2>Your Matches</h2>
+            <ul class="match-list">
+                {% for match in matches %}
+                    <li class="match">
+                        <div class="match-info">
+                            <h3>{{ match.name }}</h3>
+                            <p><strong>Age:</strong> {{ match.age }}</p>
+                            <p><strong>Email:</strong> {{ match.email }}</p>
+                            <p><strong>Gender:</strong> {{ match.gender }}</p>
+                            <!-- Ajoutez d'autres informations du match ici -->
+                        </div>
+                        <div class="match-image">
+                            <img src="{% if match.profile_image %}{{ match.profile_image.url }}{% else %}{% static 'images/default-profile-image.jpg' %}{% endif %}" alt="Match Profile Image">
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; {{ year }} My Dating App</p>
+    </footer>
+</body>
+</html>

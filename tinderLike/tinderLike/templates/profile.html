@@ -1,0 +1,44 @@
+
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>My Dating App</h1>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="user-profile">
+            <h2>User Profile</h2>
+            <div class="user-info">
+                <p><strong>Name:</strong> {{ user.name }}</p>
+                <p><strong>Age:</strong> {{ user.age }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Gender:</strong> {{ user.gender }}</p>
+                <!-- Ajoutez d'autres informations de profil ici -->
+            </div>
+            <div class="profile-image">
+                <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'images/default-profile-image.jpg' %}{% endif %}" alt="Profile Image">
+            </div>
+            <div class="profile-actions">
+                <a href="{% url 'profile' %}" class="edit-profile">Edit Profile</a>
+                <a href="{% url 'profile' %}" class="change-password">Change Password</a>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; {{ year }} My Dating App</p>
+    </footer>
+</body>
+</html>

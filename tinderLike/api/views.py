@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view
-from base.models import Users,  Pictures , Likes
-from .serializers import UserSerializer , PictureSerializer, LikeSerializer
+from base.models import Users,  Pictures , Likes, Messages
+from .serializers import UserSerializer , PictureSerializer, LikeSerializer ,MessageSerializer
 from rest_framework import status 
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
@@ -95,6 +95,7 @@ def getPicturesByUserId(request, user_id):
         # user not found
         error_message = "User not found"  
         return Response({"error": error_message}, status=status.HTTP_404_NOT_FOUND)
+    
 
 """ get all lilkes""" 
 @api_view(['GET'])
@@ -194,3 +195,127 @@ def profilesFlowByUserId(request, user_id):
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+# display just women
+@api_view(['GET'])
+def profilesFlowWomenByUserId(request, user_id):
+    try:
+        user = Users.objects.get(pk=user_id)
+    except Users.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    users_not_in_likes = Users.objects.exclude(
+        likes_received__id_user_liker=user
+    )
+    
+    users_not_associated_with_liker = Users.objects.exclude(
+        Q(likes_given__id_user_liked=user, likes_given__match='match')
+    )
+
+    result_users = users_not_in_likes & users_not_associated_with_liker
+    # Filter the result_users to include only users with gender="woman"
+    result_users = result_users.filter(gender="woman")
+    
+    result_users = result_users.exclude(pk=user_id)
+    serializer = UserSerializer(result_users, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# display just men
+@api_view(['GET'])
+def profilesFlowMenByUserId(request, user_id):
+    try:
+        user = Users.objects.get(pk=user_id)
+    except Users.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    users_not_in_likes = Users.objects.exclude(
+        likes_received__id_user_liker=user
+    )
+    
+    users_not_associated_with_liker = Users.objects.exclude(
+        Q(likes_given__id_user_liked=user, likes_given__match='match')
+    )
+
+    result_users = users_not_in_likes & users_not_associated_with_liker
+    # Filter the result_users to include only users with gender="woman"
+    result_users = result_users.filter(gender="man")
+    
+    result_users = result_users.exclude(pk=user_id)
+    serializer = UserSerializer(result_users, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# return the users of a match 
+@api_view(['GET'])
+def get_users_by_match_id(request, match_id):
+    try:
+        match = Likes.objects.get(pk=match_id)
+        
+        # check if the like status is "match"
+        if match.match == 'match':
+            # get IDs of concerned users
+            user_liker_id = match.id_user_liker_id
+            user_liked_id = match.id_user_liked_id
+
+            # get these users from the users table
+            user_liker = Users.objects.get(pk=user_liker_id)
+            user_liked = Users.objects.get(pk=user_liked_id)
+
+
+            user_liker_data = UserSerializer(user_liker).data
+            user_liked_data = UserSerializer(user_liked).data
+
+            return Response({
+                "user_liker": user_liker_data,
+                "user_liked": user_liked_data
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Match is not a 'match'"}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Likes.DoesNotExist:
+        return Response({"error": "Match not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Users.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+""" send message by user and like id  """
+@api_view(['POST'])
+def send_message(request, id_user, id_like):
+    try:
+        # check existance
+        user = Users.objects.get(pk=id_user)
+        like = Likes.objects.get(pk=id_like)
+
+        # Extract from post
+        body = request.data.get("body")
+        id_user = request.data.get("id_user")
+        id_like = request.data.get("id_like")
+
+        # check compatibility
+        if id_user != user.id or id_like != like.id:
+            return Response({"error": "Mismatch between user and like IDs"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # create message
+        message = Messages(body=body, id_user=user, id_like=like)
+        message.save()
+
+        return Response({"message": "Message sent successfully"}, status=status.HTTP_201_CREATED)
+
+    except Users.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Likes.DoesNotExist:
+        return Response({"error": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+""" get all messages of a conversation """
+@api_view(['GET'])
+def get_conversation(request, id_like):
+    try:
+        # Filter messages by id_like
+        messages = Messages.objects.filter(id_like=id_like)
+        
+        serializer = MessageSerializer(messages, many=True)
+    
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Messages.DoesNotExist:
+        return Response({"error": "Messages not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+""" get all messages of a conversation sent by a specific user """

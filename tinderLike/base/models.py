@@ -15,10 +15,11 @@ class Users(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField()
 
+
 class Pictures(models.Model):
     id_user = models.ForeignKey(Users, on_delete=models.CASCADE)
     img = models.TextField()
-    profile = models.BooleanField()
+    profile = models.BooleanField(default=False)
     
 class Likes(models.Model):
     MATCH_CHOICES = [
@@ -33,5 +34,6 @@ class Likes(models.Model):
 
 class Messages(models.Model):
     body = models.TextField()
+    id_user=models.ForeignKey(Users, on_delete=models.CASCADE)
     id_like = models.ForeignKey(Likes, on_delete=models.CASCADE)
 

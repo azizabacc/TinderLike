@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from base.models import Users,  Pictures , Likes
 from .serializers import UserSerializer , PictureSerializer
 from rest_framework import status 
+from django.shortcuts import get_object_or_404
 
 """ get all users""" 
 @api_view(['GET'])
@@ -23,7 +24,7 @@ def addUser(request):
 @api_view(['DELETE'])
 def delete_user(request, user_id):
     try:
-        user = Users.objects.get(id_user=user_id)
+        user = Users.objects.get(id=user_id)
     except Users.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -34,7 +35,7 @@ def delete_user(request, user_id):
 """ get user by id""" 
 @api_view(['GET'])
 def getUsersById(request, user_id):
-    queryset = Users.objects.filter(id_user=user_id)
+    queryset = Users.objects.filter(id=user_id)
     users = UserSerializer(queryset, many=True)  
     return Response(users.data)
 
@@ -43,8 +44,18 @@ def getUsersById(request, user_id):
 def addPictureByUserId(request, user_id):
     serializer = PictureSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(id_user=user_id)
-        return Response(serializer.data)
+        """ if the user with the user_id exists """
+        try:
+            user = Users.objects.get(pk=user_id)
+        except Users.DoesNotExist:
+            return Response({"error": "user doesn't exist"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer.save(id_user=user)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    """ f the data validation by the serializer fails """
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 """ Get pictures  BY USER ID """
 @api_view(['GET'])

@@ -6,59 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
 </head>
 <body>
     <header>
         <nav>
             <div class="logo">
+                <a href="{% url 'main' %}">
                 <h1>My Dating App</h1>
+            </a>
             </div>
         </nav>
     </header>
-    {%if message is not null %}
-<script> alert({message.text}) </script>
-{% endif %}
     <main>
-        <section class="signup-form">
-            <h2>Sign Up</h2>
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_username">Username:</label>
-                    <input type="text" id="id_username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="id_email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="id_password1">Password:</label>
-                    <input type="password" autocomplete="new-password" id="id_password1" name="password1" required>
-                </div>
-                 <div class="form-group">
-                    <label for="id_password2">Password confirmation:</label>
-                    <input type="password" autocomplete="new-password" id="id_password2" name="password2" required>
-                </div>
-                <div class="form-group">
-                    <label for="name">name:</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                 <div class="form-group">
-                    <label for="age">age:</label>
-                    <input type="number" id="age" name="age" required>
-                </div>
-                 <div class="form-group">
-                    <label for="rating">rating:</label>
-                    <input type="number" id="rating" name="rating" required>
-                </div>
-                <button type="submit">Sign Up</button>
-            </form>
-            <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
-        </section>
-    </main>
-    
-    <footer>
-        <p>&copy; {{ year }} My Dating App</p>
-    </footer>
+       {%if message is not null %}
+       <p>
+       {{message}}
+   </p>
+       <script > 
+        let message = `{{message}}`
+       alert(message) 
+   </script>
+        {% endif %}
+       <section class="signup-form">
+        <h2>Sign Up</h2>
+        <form method="post">
+           
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                <input type="text" id="id_username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="id_password1">Password:</label>
+                <input type="password" autocomplete="new-password" id="id_password1" name="password1" required>
+            </div>
+            <div class="form-group">
+                <label for="id_password2">Password confirmation:</label>
+                <input type="password" autocomplete="new-password" id="id_password2" name="password2" required>
+            </div>
+            <div class="form-group">
+                <label for="name">name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="age">age:</label>
+                <input type="number" id="age" name="age" required>
+            </div>
+            <div class="form-group">
+                <label for="rating">rating:</label>
+                <input type="number" id="rating" name="rating" required>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; {{ year }} My Dating App</p>
+</footer>
 </body>
 </html>

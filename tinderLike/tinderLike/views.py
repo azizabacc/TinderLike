@@ -44,26 +44,32 @@ def make_login(request):
 		return render(request, 'login.html')
 
 def signup(request):
-	form = UserCreationForm(request.POST)
-	if request.method == 'POST':
-
-		value = requests.post("http://localhost:8000/apiusers/add", request.POST)
-		data = json.loads(value.text)
-	
-		userData={
-		"username" : request.POST.get('email'),
-		"email" : request.POST.get('email'),
-		"password1" : request.POST.get('password1'),
-		"password2" : request.POST.get('password2'),
-		"first_name" : data.get('id'),
-		}
-
-		form = UserCreationForm(userData)
+	if request.method == 'POST' : 
+		form = UserCreationForm(request.POST)
 		if form.is_valid():
-			form.save()
-		else : 
-			return render(request, 'signup.html', {"message": str(Exception)})
-	else:
+			try : 
+				value = requests.post("http://localhost:8000/apiusers/add", request.POST)
+				data = json.loads(value.text)
+			
+				userData={
+				"username" : request.POST.get('email'),
+				"email" : request.POST.get('email'),
+				"password1" : request.POST.get('password1'),
+				"password2" : request.POST.get('password2'),
+				"first_name" : data.get('id'),
+				}
+
+				form = UserCreationForm(userData)
+				form.save()
+			except Exception as error : 
+				return render(request, 'signup.html', {"message": form.errors})
+		else:
+
+			try :
+				form.save()
+			except Exception as error : 
+				return render(request, 'signup.html',{"message": form.errors})
+	else : 
 		return render(request, 'signup.html')
 
 

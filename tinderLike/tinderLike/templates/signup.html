@@ -15,7 +15,9 @@
             </div>
         </nav>
     </header>
-    
+    {%if message is not null %}
+<script> alert({message.text}) </script>
+{% endif %}
     <main>
         <section class="signup-form">
             <h2>Sign Up</h2>

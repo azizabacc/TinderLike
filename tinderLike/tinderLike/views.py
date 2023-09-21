@@ -69,7 +69,8 @@ def signup(request):
 
 
 def like(request):
-	return render(request, 'like.html')
+    return render(request, 'like.html', {'user': api_data})
+
 
 def match(request):
 	return render(request, 'match.html')

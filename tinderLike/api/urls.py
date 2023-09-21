@@ -20,7 +20,7 @@ urlpatterns = [
     path('Likes/<int:id_user_liker>/declines/<int:id_user_liked>/', views.decline_user),
     path('Likes/<int:user_liker_id>/dismatch/<int:user_liked_id>/', views.dismatch),
 
-    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId),
+    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId, name='profilesFlow'),
     path('profilesFlow/women/<int:user_id>',views.profilesFlowWomenByUserId),
     path('profilesFlow/men/<int:user_id>',views.profilesFlowMenByUserId),
 

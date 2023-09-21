@@ -20,14 +20,15 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('api.urls')),
+    path('api', include('api.urls')),
     path('test', views.show_user),
     path('main', views.show_template, name='main'),
-    path('login',views.login, name='login'),
+    path('login',views.make_login, name='login'),
     path('signup',views.signup, name='signup'),
     path('profile',views.profile, name='profile'),
     path('match',views.match, name='match'),
     path('like',views.like, name='like'),
     path('chat',views.chat, name='chat'),
+    
 
     ]

@@ -109,6 +109,7 @@ def getAllLikes(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+""" like someone """
 @api_view(['POST'])
 def like_user(request, id_user_liker, id_user_liked):
     try:
@@ -131,7 +132,7 @@ def like_user(request, id_user_liker, id_user_liked):
     except Users.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-
+"""dislike someone """
 @api_view(['POST'])
 def decline_user(request, id_user_liker, id_user_liked):
     try:
@@ -154,6 +155,7 @@ def decline_user(request, id_user_liker, id_user_liked):
     except Users.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
      
+"""get all relations for an id """     
 @api_view(['GET'])
 def getLikesByUserId(request, user_id):
     # likes where either id_user_liker or id_user_liked matches user_id
@@ -161,7 +163,7 @@ def getLikesByUserId(request, user_id):
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
-
+""" get all relations for an id who has MATCH as match"""
 @api_view(['GET'])
 def getMatchesByUserId(request, user_id):
     #all likes where (id_user_liker = user_id OR id_user_liked = user_id) and match = "match"
@@ -169,6 +171,7 @@ def getMatchesByUserId(request, user_id):
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
+"""users you can still like or dislike as an user connected"""
 @api_view(['GET'])
 def profilesFlowByUserId(request, user_id):
     try:

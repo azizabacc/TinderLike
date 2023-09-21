@@ -317,5 +317,73 @@ def get_conversation(request, id_like):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Messages.DoesNotExist:
         return Response({"error": "Messages not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+""" set profile picture by picture_id"""
+
+@api_view(['PATCH'])
+def set_profile_picture(request, picture_id):
+    try:
+        picture = Pictures.objects.get(pk=picture_id)
+        
+        # update profile with request/ if no request by default profil set to False
+        picture.profile = request.data.get('profile', False)
+        picture.save()
+        
+        # update the other profiles of the same user to have just one profile picture
+        if picture.profile:
+            user_pictures = Pictures.objects.filter(id_user=picture.id_user, profile=True).exclude(pk=picture_id)
+            user_pictures.update(profile=False)
+        
+        return Response({"message": "Profile picture updated successfully"}, status=status.HTTP_200_OK)
+    except Pictures.DoesNotExist:
+        return Response({"error": "Picture not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+""" edit a message"""
+@api_view(['PATCH'])
+def edit_message(request, message_id):
+    try:
+        message= Messages.objects.get(pk=message_id)
+        
+        # update profile with request/ if no request by default profil set to False
+        message.body = request.data.get('body')
+        message.save()
+        
+        
+        return Response({"message": "Message updated successfully"}, status=status.HTTP_200_OK)
+    except Pictures.DoesNotExist:
+        return Response({"error": "Mesaage not found"}, status=status.HTTP_404_NOT_FOUND)
     
-""" get all messages of a conversation sent by a specific user """
+""" delete a message by id  """
+@api_view(['DELETE'])
+def delete_message(request, message_id):
+    try:
+        message = Messages.objects.get(id=message_id)
+    except Messages.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    message.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+""" Dismatch """
+@api_view(['DELETE'])
+def dismatch(request, user_liker_id, user_liked_id):
+    try:
+        matching_like = Likes.objects.filter(
+            (Q(id_user_liker=user_liker_id, id_user_liked=user_liked_id) | Q(id_user_liked=user_liker_id, id_user_liker=user_liked_id))
+            & Q(match='match')
+        ).first()
+
+        if not matching_like:
+            return Response({"message": "No match found"}, status=status.HTTP_200_OK)
+
+        Likes.objects.filter((Q(id_user_liker=user_liker_id, id_user_liked=user_liked_id) | Q(id_user_liked=user_liker_id, id_user_liker=user_liked_id)) & Q(match='match')).delete()
+        
+        return Response({"message": "Dismatched successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+

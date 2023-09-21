@@ -61,6 +61,19 @@ def signup(request):
 
 				form = UserCreationForm(userData)
 				form.save()
+				
+				user = authenticate(request, username=userData.get('username'), password=userData.get('password1'), id=data.get('id'))
+				print(user)
+				if user is not None:
+	
+					login(request, user)
+					request.session["id_user"]=user.first_name
+
+
+					return redirect('main')
+				else : 
+					return redirect('login')
+
 			except Exception as error : 
 				return render(request, 'signup.html', {"message": form.errors})
 		else:

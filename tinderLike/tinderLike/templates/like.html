@@ -22,10 +22,11 @@
     <main>
         <section class="user-profile">
             <div class="user-info">
-                <h2>{{ user.first_name }}</h2>
-                <p>Age: {{ user.age }}</p>
-                <p>Email: {{ user.email }}</p>
-                <p>Gender: {{ user.gender }}</p>
+
+                <h2>{{ profile.name }}</h2>
+                <p>Age: {{ profile.age }}</p>
+                <p>Email: {{ profile.email }}</p>
+                <p>Gender: {{ profile.gender }}</p>
             </div>
             <div class="like-dislike-buttons">
                 <form method="post" action="{% url 'like'%}">

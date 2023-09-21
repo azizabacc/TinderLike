@@ -8,6 +8,7 @@ from django.contrib import messages
 import requests
 import json
 
+
 def show_user(request):
 	res = requests.get("http://localhost:8000/usersList")
 	response = json.loads(res.text)
@@ -17,6 +18,7 @@ def show_template(request):
 
 	print(request.session.get("id_user"))
 	response = "lalalaal"
+
 	return render(request, 'homepage.html', {"response": response})
 	# template = loader.get_template('homepage.html')
 	# return HttpResponse(template.render(response))
@@ -88,7 +90,26 @@ def signup(request):
 
 
 def like(request):
-	return render(request, 'like.html')
+	if request.method == 'POST' :
+		print(request.POST.get('action'))
+		if request.POST.get("action")=='dislike' : 
+			print(request.POST.get('action'))
+			id_user = request.session.get("id_user")
+			res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
+			data = json.loads(res.text)
+			return render(request, 'like.html',{"profile" : data[0]})
+			# requests.POST('http://localhost:8000/apiprofilesFlow/{}'.format())
+		else :
+			print(request.POST.get("action"))
+			id_user = request.session.get("id_user")
+			res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
+			data = json.loads(res.text)
+			return render(request, 'like.html',{"profile" : data[0]})
+	else : 
+		id_user = request.session.get("id_user")
+		res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
+		data = json.loads(res.text)
+		return render(request, 'like.html', {"profile" : data[0]})
 
 def match(request):
 	return render(request, 'match.html')
@@ -97,6 +118,7 @@ def chat(request):
 	return render(request, 'chat.html')
 
 def profile(request):
+
 	return render(request, 'profile.html')
 
 def swagger_ui(request):

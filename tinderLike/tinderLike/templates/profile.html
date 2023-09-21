@@ -13,8 +13,8 @@
         <nav>
             <div class="logo">
                 <a href="{% url 'main' %}">
-                <h1>My Dating App</h1>
-            </a>
+                    <h1>My Dating App</h1>
+                </a>
             </div>
         </nav>
     </header>
@@ -23,18 +23,29 @@
         <section class="user-profile">
             <h2>User Profile</h2>
             <div class="user-info">
-
-                <p><strong>Name:</strong> {{ user.first_name }}</p>
-                <p><strong>Age:</strong> {{ user.age }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-                <p><strong>Gender:</strong> {{ user.gender }}</p>
+                {{data}}
+                <p><strong>Name:</strong> {{ my_user.name }}</p>
+                <p><strong>Age:</strong> {{ my_user.age }}</p>
+                <p><strong>Email:</strong> {{ my_user.email }}</p>
+                <p><strong>Gender:</strong> {{ my_user.gender }}</p>
+                <p><strong>rating:</strong> {{ my_user.rating }}</p>
                 <!-- Ajoutez d'autres informations de profil ici -->
             </div>
             <div class="profile-image">
-                <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'images/default-profile-image.jpg' %}{% endif %}" alt="Profile Image">
+                {% for obj in my_picture %}
+                <img src="{{obj.name}}" alt="">
+                {% endfor %}}
             </div>
             <div class="profile-actions">
                 <a href="{% url 'profile' %}" class="edit-profile">Edit Profile</a>
+                <form method="post" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="addPicture">url of your picture</label>
+                        <input type="text" id="addPicture" name="addPicture" required>
+                    </div>
+                    <button type="submit">add picture</button>
+                </form>
                 <a href="{% url 'profile' %}" class="change-password">Change Password</a>
             </div>
         </section>

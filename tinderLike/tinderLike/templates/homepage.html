@@ -12,13 +12,15 @@
     <header>
         <nav>
             <div class="logo">
+                
                 <h1>My Dating App</h1>
+        
             </div>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Profile</a></li>
-                <li><a href="#">Matches</a></li>
-                <li><a href="#">Settings</a></li>
+                <li><a href="{% url 'login' %}">Home</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'match' %}">Matches</a></li>
+                <li><a href="{% url 'like' %}">Settings</a></li>
             </ul>
         </nav>
     </header>

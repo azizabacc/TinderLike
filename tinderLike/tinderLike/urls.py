@@ -45,10 +45,10 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('api.urls')),
+    path('api', include('api.urls')),
     path('test', views.show_user),
     path('main', views.show_template, name='main'),
-    path('login',views.login, name='login'),
+    path('login',views.make_login, name='login'),
     path('signup',views.signup, name='signup'),
     path('profile',views.profile, name='profile'),
     path('match',views.match, name='match'),
@@ -56,5 +56,5 @@ urlpatterns = [
     path('chat',views.chat, name='chat'),
     path('Doc/', schema_view.with_ui('swagger', cache_timeout=0),
         name='schema-swagger-ui'),
-  
+
     ]

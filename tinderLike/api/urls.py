@@ -8,7 +8,7 @@ urlpatterns = [
     path('users/add', views.addUser, name='addUser'),
     path('users/deleteAccount/<int:user_id>/', views.delete_user),
     
-    path('pictures/add/<int:user_id>', views.addPictureByUserId),
+    path('pictures/add/<int:user_id>', views.addPictureByUserId, name="addPicture"),
     path('pictures/profile/<int:picture_id>', views.set_profile_picture),
     path('pictures/getPicture/<int:user_id>', views.getPicturesByUserId),
 

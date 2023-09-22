@@ -15,13 +15,8 @@ def show_user(request):
 	return HttpResponse(format(response))
 
 def show_template(request):
+	return render(request, 'homepage.html')
 
-	print(request.session.get("id_user"))
-	response = "lalalaal"
-
-	return render(request, 'homepage.html', {"response": response})
-	# template = loader.get_template('homepage.html')
-	# return HttpResponse(template.render(response))
 
 
 def make_login(request):
@@ -31,11 +26,8 @@ def make_login(request):
 		password = request.POST['password']
 		user = authenticate(request, username=email, password=password)
 		if user is not None:
-	
 			login(request, user)
 			request.session["id_user"]=user.first_name
-
-
 			return redirect('main')
 		else:
 			pass
@@ -114,8 +106,21 @@ def chat(request):
 	return render(request, 'chat.html')
 
 def profile(request):
-
-	return render(request, 'profile.html')
+	id_user = request.session.get("id_user")
+	if request.method == 'POST' and request.POST.get('addPicture') is not None  :
+		res = requests.post('http://localhost:8000/apipictures/add/{}'.format(id_user))
+		return redirect('profile')
+	else :	
+		res = requests.get('http://localhost:8000/apiusers/{}'.format(id_user))
+		data = json.loads(res.text)
+		resPicture = requests.get('http://localhost:8000/apipictures/getPicture/{}'.format(id_user))
+		if resPicture : 
+			dataPicture=json.load(resPicture)
+			print(dataPicture)
+			return render(request, 'profile.html',{"my_user": data , "my_picture" : dataPicture})
+			print(data)
+		else :
+			return render(request, 'profile.html',{"my_user": data})
 
 def swagger_ui(request):
 	return render(request, 'swagger-ui.html')

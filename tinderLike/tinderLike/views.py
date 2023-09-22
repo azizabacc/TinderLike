@@ -82,26 +82,22 @@ def signup(request):
 
 
 def like(request):
-	if request.method == 'POST' :
-		print(request.POST.get('action'))
-		if request.POST.get("action")=='dislike' : 
-			print(request.POST.get('action'))
-			id_user = request.session.get("id_user")
-			res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
-			data = json.loads(res.text)
-			return render(request, 'like.html',{"profile" : data[0]})
-			# requests.POST('http://localhost:8000/apiprofilesFlow/{}'.format())
-		else :
-			print(request.POST.get("action"))
-			id_user = request.session.get("id_user")
-			res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
-			data = json.loads(res.text)
-			return render(request, 'like.html',{"profile" : data[0]})
-	else : 
-		id_user = request.session.get("id_user")
-		res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
-		data = json.loads(res.text)
-		return render(request, 'like.html', {"profile" : data[0]})
+    id_user = request.session.get("id_user")
+    
+    res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
+
+    if res.status_code == 200:
+        data = json.loads(res.text)
+
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            if action == 'dislike':
+                res = requests.post('http://localhost:8000/apiLikes/user/{}/declines/{}/'.format(id_user, data[0]['id']))
+            elif action == 'like':
+                res = requests.post('http://localhost:8000/apiLikes/user/{}/likes/{}/'.format(id_user, data[0]['id']))
+
+    return render(request, 'like.html', {"profile": data[0]})
+
 
 def match(request):
 	return render(request, 'match.html')

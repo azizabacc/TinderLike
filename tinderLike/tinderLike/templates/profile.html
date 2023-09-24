@@ -33,8 +33,8 @@
             </div>
             <div class="profile-image">
                 {% for obj in my_picture %}
-                <img src="{{obj.name}}" alt="">
-                {% endfor %}}
+                <img src="{{obj.img}}" alt="" class="profile-img">
+                {% endfor %}
             </div>
             <div class="profile-actions">
                 <a href="{% url 'profile' %}" class="edit-profile">Edit Profile</a>

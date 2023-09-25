@@ -119,7 +119,14 @@ def like(request):
 
 
 def match(request):
-	return render(request, 'match.html')
+	id_user= request.session.get('id_user')
+	res = requests.get('http://localhost:8000/apiLikes/usersMatches/{}/'.format(id_user))
+	if res.status_code == 200 : 
+		data = json.loads(res.text)
+		print(data)
+		return render(request, 'match.html',{"matches":data})
+	else :
+		redirect('main')
 
 def chat(request):
 	return render(request, 'chat.html')

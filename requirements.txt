@@ -4,6 +4,7 @@ charset-normalizer==3.2.0
 Django==4.2.5
 djangorestframework==3.14.0
 drf-yasg==1.21.7
+gunicorn==21.2.0
 idna==3.4
 inflection==0.5.1
 packaging==23.1
@@ -16,4 +17,5 @@ sqlparse==0.4.4
 typing_extensions==4.8.0
 uritemplate==4.1.1
 urllib3==2.0.4
+
 

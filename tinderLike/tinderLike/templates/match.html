@@ -23,13 +23,13 @@
         <section class="matches">
             <h2>Your Matches</h2>
             <ul class="match-list">
-                {% for match in matches %}
+                {% for obj in matches %}
                     <li class="match">
                         <div class="match-info">
-                            <h3>{{ match.name }}</h3>
-                            <p><strong>Age:</strong> {{ match.age }}</p>
-                            <p><strong>Email:</strong> {{ match.email }}</p>
-                            <p><strong>Gender:</strong> {{ match.gender }}</p>
+                            <h3>{{ obj.name }}</h3>
+                            <a href="dqzddzq/{{match_id}}"><p><strong>Age:</strong> {{ obj.age }}</p></a>
+                            <p><strong>Email:</strong> {{ obj.email }}</p>
+                            <p><strong>Gender:</strong> {{ obj.gender }}</p>
                             <!-- Ajoutez d'autres informations du match ici -->
                         </div>
                         <div class="match-image">

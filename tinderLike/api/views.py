@@ -170,11 +170,29 @@ def getLikesByUserId(request, user_id):
     return Response(serializer.data)
 
 """ get all relations for an id who has MATCH as match"""
+# @api_view(['GET'])
+# def getMatchesByUserId(request, user_id):
+#     #all likes where (id_user_liker = user_id OR id_user_liked = user_id) and match = "match"
+#     likes = Likes.objects.filter(Q(id_user_liker=user_id) | Q(id_user_liked=user_id), match="match")
+#     serializer = LikeSerializer(likes, many=True)
+#     return Response(serializer.data)
+
 @api_view(['GET'])
 def getMatchesByUserId(request, user_id):
     #all likes where (id_user_liker = user_id OR id_user_liked = user_id) and match = "match"
     likes = Likes.objects.filter(Q(id_user_liker=user_id) | Q(id_user_liked=user_id), match="match")
     serializer = LikeSerializer(likes, many=True)
+    print(serializer.data)
+    # user = Users.objects.filter(Q(id=likes.id_user_liker) | Q(id=likes.id_user_liked), id!=user_id )
+    # user_serializer=UserSerializer(user, many=True)
+    likes_instance = Likes.objects.get(id=42)
+    user_liker = likes_instance.id_user_liker
+    myuser=user_liker.email
+    print(myuser)
+
+    user = Likes.objects.filter(Q(id_user_liker=user_id) | Q(id_user_liked=user_id), match="match").select_related("id_user_liked")
+    user_serializer=LikeSerializer(user, many=True)    
+    # print(user_serializer.data)
     return Response(serializer.data)
 
 """users you can still like or dislike as an user connected"""

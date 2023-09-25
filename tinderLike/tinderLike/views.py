@@ -100,14 +100,21 @@ def like(request):
     if resPic.status_code == 200 : 
 
     	dataPicture = json.loads(resPic.text)  
-    	print(dataPicture)          
+    	print(dataPicture[0])          
     else : 
     	dataPicture = {"img" : 'nopic'}
-    return render(request, 'like.html', {"profile": data[0], "picture" : dataPicture[0]})
+    return render(request, 'like.html', {"profile": data[0], "picture" : dataPicture})
 
 
 def match(request):
-	return render(request, 'match.html')
+	id_user= request.session.get('id_user')
+	res = requests.get('http://localhost:8000/apiLikes/usersMatches/{}/'.format(id_user))
+	if res.status_code == 200 : 
+		data = json.loads(res.text)
+		print(data)
+		return render(request, 'match.html',{"matches":data})
+	else :
+		redirect('main')
 
 def chat(request):
 	return render(request, 'chat.html')

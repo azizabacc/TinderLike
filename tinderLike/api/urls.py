@@ -11,7 +11,8 @@ urlpatterns = [
     path('pictures/add/<int:user_id>', views.addPictureByUserId, name="addPicture"),
     path('pictures/profile/<int:picture_id>', views.set_profile_picture),
     path('pictures/getPicture/<int:user_id>', views.getPicturesByUserId),
-
+    path('pictures/profilePic/<int:user_id>/', views.getProfilePictureByUserId),
+    
     path('Likes/allLikes', views.getAllLikes),
     path('Likes/user/<int:id_user_liker>/likes/<int:id_user_liked>/', views.like_user),
     path('Likes/usersMatches/<int:user_id>/', views.getMatchesByUserId),
@@ -20,7 +21,7 @@ urlpatterns = [
     path('Likes/user/<int:id_user_liker>/declines/<int:id_user_liked>/', views.decline_user),
     path('Likes/<int:user_liker_id>/dismatch/<int:user_liked_id>/', views.dismatch),
 
-    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId, name='profilesFlow'),
+    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId),
     path('profilesFlow/women/<int:user_id>',views.profilesFlowWomenByUserId),
     path('profilesFlow/men/<int:user_id>',views.profilesFlowMenByUserId),
 

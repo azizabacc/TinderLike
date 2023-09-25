@@ -1,27 +1,28 @@
-
 {%load static%}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Like or Dislike</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/like.css' %}">
 </head>
+
 <body>
     <header>
         <nav>
             <div class="logo">
                 <a href="{% url 'main' %}">
-                <h1>My Dating App</h1>
-                <a href="{% url 'main' %}">
+                    <h1>My Dating App</h1>
+                    <a href="{% url 'main' %}">
             </div>
         </nav>
     </header>
-    
+
     <main>
         <section class="user-profile">
-            <div class="user-info">
+            <div class="user-info" style="background-image: url('{{ pic.img }}');" >
 
                 <h2>{{ profile.name }}</h2>
                 <p>Age: {{ profile.age }}</p>
@@ -40,9 +41,10 @@
             </div>
         </section>
     </main>
-    
+
     <footer>
         <p>&copy; {{ year }} My Dating App</p>
     </footer>
 </body>
+
 </html>

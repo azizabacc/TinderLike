@@ -81,23 +81,45 @@ def signup(request):
 
 
 
+import json
+import requests
+from django.shortcuts import render
+
+import json
+import requests
+from django.shortcuts import render
+
 def like(request):
     id_user = request.session.get("id_user")
     
-    res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
+    # Récupérez les données du profil
+    res_profile = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
 
-    if res.status_code == 200:
-        data = json.loads(res.text)
+    data = {}  # Initialisez data comme un dictionnaire vide
+    profile_pic_data = {}  # Initialisez profile_pic_data comme un dictionnaire vide
 
-        if request.method == 'POST':
-            action = request.POST.get('action')
-            if action == 'dislike':
-                res = requests.post('http://localhost:8000/apiLikes/user/{}/declines/{}/'.format(id_user, data[0]['id']))
-            elif action == 'like':
-                res = requests.post('http://localhost:8000/apiLikes/user/{}/likes/{}/'.format(id_user, data[0]['id']))
+    if res_profile.status_code == 200:
+        data = json.loads(res_profile.text)
 
-    return render(request, 'like.html', {"profile": data[0]})
+        
+        res_profile_pic = requests.get('http://localhost:8000/apipictures/profilePic/3/')
 
+        if res_profile_pic.status_code == 200:
+            profile_pic_data = json.loads(res_profile_pic.text)
+
+            if request.method == 'POST':
+                action = request.POST.get('action')
+                if action == 'dislike':
+                    res = requests.post('http://localhost:8000/apiLikes/user/{}/declines/{}/'.format(id_user, data[0]['id']))
+                elif action == 'like':
+                    res = requests.post('http://localhost:8000/apiLikes/user/{}/likes/{}/'.format(id_user, data[0]['id']))
+            
+            # Ajoutez les données de la photo de profil aux données du profil
+            
+
+    print(profile_pic_data)  # Ajoutez cette ligne pour afficher les données du profil
+
+    return render(request, 'like.html', {"profile": data[0] , "pic":profile_pic_data })
 
 def match(request):
 	return render(request, 'match.html')

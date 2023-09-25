@@ -171,6 +171,7 @@ def getMatchesByUserId(request, user_id):
     serializer = LikeSerializer(likes, many=True)
     return Response(serializer.data)
 
+
 """users you can still like or dislike as an user connected"""
 @api_view(['GET'])
 def profilesFlowByUserId(request, user_id):
@@ -389,4 +390,16 @@ def dismatch(request, user_liker_id, user_liked_id):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+    #get profile picture by user id 
+@api_view(['GET'])
+def getProfilePictureByUserId(request, user_id):
+    try:
+        profile_picture = Pictures.objects.get(id_user=user_id, profile=True)
 
+        serializer = PictureSerializer(profile_picture)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Pictures.DoesNotExist:
+        return Response({"error": "Profil picture not found for this user"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

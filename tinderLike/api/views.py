@@ -63,8 +63,14 @@ def getUsersById(request, user_id):
 """ Add picture BY USER ID""" 
 @api_view(['POST'])
 def addPictureByUserId(request, user_id):
-    serializer = PictureSerializer(data=request.data)
+
+    """ update route, setting up data from the post request"""
+    data = {"img": request.POST.get('img'), "id_user":user_id, "profile":0, }
+   
+    serializer = PictureSerializer(data=data)
+   
     if serializer.is_valid():
+
         """ if the user with the user_id exists """
         try:
             user = Users.objects.get(pk=user_id)

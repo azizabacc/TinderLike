@@ -21,8 +21,12 @@
     
     <main>
         <section class="user-profile">
+            <div class="profile-image">
+                {% for obj in picture %}
+                <img src='{{ picture.img }}' alt="">
+                {% endfor %}           
+                 </div>    
             <div class="user-info">
-
                 <h2>{{ profile.name }}</h2>
                 <p>Age: {{ profile.age }}</p>
                 <p>Email: {{ profile.email }}</p>

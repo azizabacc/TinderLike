@@ -88,15 +88,22 @@ def like(request):
 
     if res.status_code == 200:
         data = json.loads(res.text)
-
         if request.method == 'POST':
             action = request.POST.get('action')
             if action == 'dislike':
                 res = requests.post('http://localhost:8000/apiLikes/user/{}/declines/{}/'.format(id_user, data[0]['id']))
+                redirect('like')
             elif action == 'like':
                 res = requests.post('http://localhost:8000/apiLikes/user/{}/likes/{}/'.format(id_user, data[0]['id']))
+                redirect('like')
+    resPic = requests.get('http://localhost:8000/apipictures/getPicture/{}'.format(data[0].get('id')))
+    if resPic.status_code == 200 : 
 
-    return render(request, 'like.html', {"profile": data[0]})
+    	dataPicture = json.loads(resPic.text)  
+    	print(dataPicture)          
+    else : 
+    	dataPicture = {"img" : 'nopic'}
+    return render(request, 'like.html', {"profile": data[0], "picture" : dataPicture[0]})
 
 
 def match(request):
@@ -106,16 +113,20 @@ def chat(request):
 	return render(request, 'chat.html')
 
 def profile(request):
+	# retrieve user_id
 	id_user = request.session.get("id_user")
+	# check if you're trying to post a new picture
 	if request.method == 'POST' and request.POST.get('addPicture') is not None  :
-		res = requests.post('http://localhost:8000/apipictures/add/{}'.format(id_user))
+		# 
+		res = requests.post('http://localhost:8000/apipictures/add/{}'.format(id_user),{'img':request.POST.get('addPicture')})
 		return redirect('profile')
 	else :	
 		res = requests.get('http://localhost:8000/apiusers/{}'.format(id_user))
 		data = json.loads(res.text)
 		resPicture = requests.get('http://localhost:8000/apipictures/getPicture/{}'.format(id_user))
 		if resPicture : 
-			dataPicture=json.load(resPicture)
+			# print(resPicture)
+			dataPicture=json.loads(resPicture.text)
 			print(dataPicture)
 			return render(request, 'profile.html',{"my_user": data , "my_picture" : dataPicture})
 			print(data)

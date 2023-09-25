@@ -1,1 +1,1 @@
-web: gunicorn tinderlike.wsgi
+web: gunicorn tinderLike.wsgi

@@ -1,0 +1,1 @@
+web: gunicorn tinderlike.tinderlike.wsgi

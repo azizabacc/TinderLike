@@ -53,7 +53,7 @@ urlpatterns = [
     path('profile',views.profile, name='profile'),
     path('match',views.match, name='match'),
     path('like',views.like, name='like'),
-    path('chat',views.chat, name='chat'),
+    path('chat/<int:match_id>',views.chat, name='chat'),
     path('Doc/', schema_view.with_ui('swagger', cache_timeout=0),
         name='schema-swagger-ui'),
 

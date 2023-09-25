@@ -179,21 +179,33 @@ def getLikesByUserId(request, user_id):
 
 @api_view(['GET'])
 def getMatchesByUserId(request, user_id):
-    #all likes where (id_user_liker = user_id OR id_user_liked = user_id) and match = "match"
-    likes = Likes.objects.filter(Q(id_user_liker=user_id) | Q(id_user_liked=user_id), match="match")
-    serializer = LikeSerializer(likes, many=True)
-    print(serializer.data)
-    # user = Users.objects.filter(Q(id=likes.id_user_liker) | Q(id=likes.id_user_liked), id!=user_id )
-    # user_serializer=UserSerializer(user, many=True)
-    likes_instance = Likes.objects.get(id=42)
-    user_liker = likes_instance.id_user_liker
-    myuser=user_liker.email
-    print(myuser)
+    likes = Likes.objects.filter(Q(id_user_liker=user_id) | Q(id_user_liked=user_id), match="match").select_related('id_user_liker', 'id_user_liked')
+   
+    matched_users = []
 
-    user = Likes.objects.filter(Q(id_user_liker=user_id) | Q(id_user_liked=user_id), match="match").select_related("id_user_liked")
-    user_serializer=LikeSerializer(user, many=True)    
-    # print(user_serializer.data)
-    return Response(serializer.data)
+    for like in likes:
+        profile_picture = Pictures.objects.filter(id_user=like.id_user_liker_id, profile=True).first()
+        if not profile_picture:
+            profile_picture = Pictures.objects.filter(id_user=like.id_user_liked_id, profile=True).first()
+
+        serializer = PictureSerializer(profile_picture)
+
+        if like.id_user_liker_id == user_id:
+            matched_user = like.id_user_liked
+        else:
+            matched_user = like.id_user_liker
+
+        user_info = {
+            "match_id" : like.id,
+            "email": matched_user.email,
+            "name": matched_user.name,
+            "age": matched_user.age,
+            "gender": matched_user.gender,
+            "profile_pic": serializer.data['img'] if profile_picture else None
+        }
+        matched_users.append(user_info)
+
+    return Response(matched_users)
 
 
 """users you can still like or dislike as an user connected"""

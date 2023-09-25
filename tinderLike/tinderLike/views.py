@@ -124,12 +124,21 @@ def match(request):
 	if res.status_code == 200 : 
 		data = json.loads(res.text)
 		print(data)
-		return render(request, 'match.html',{"matches":data})
+		return render(request, 'match.html',{"matches": data})
 	else :
 		redirect('main')
 
-def chat(request):
-	return render(request, 'chat.html')
+def chat(request, match_id):
+	id_user= request.session.get('id_user')
+	res = requests.get('http://localhost:8000/apichat/conversation/{}/'.format(match_id))
+	chat_messages = json.loads(res.text)
+	print(chat_messages)
+	if res.status_code == 200 :
+		if request.method == 'POST':
+			action = request.POST.get('action')
+			if action == 'send':
+				res = requests.post('http://localhost:8000/apichat/{user}/{match}/'.format(user=id_user,match=match_id))	
+	return render(request, 'chat.html', {"chat_messages": chat_messages,"obj": match_id , "id_user": id_user})
 
 def profile(request):
 	# retrieve user_id

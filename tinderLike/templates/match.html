@@ -1,48 +1,55 @@
-
 {%load static%}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matches</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
     <header>
         <nav>
             <div class="logo">
                 <a href="{% url 'main' %}">
-                <h1>My Dating App</h1>
-            </a>
+                    <h1>My Dating App</h1>
+                </a>
             </div>
         </nav>
     </header>
-    
+
     <main>
         <section class="matches">
             <h2>Your Matches</h2>
             <ul class="match-list">
+
                 {% for obj in matches %}
-                    <li class="match">
-                        <div class="match-info">
-                            <h3>{{ obj.name }}</h3>
-                            <a href="dqzddzq/{{match_id}}"><p><strong>Age:</strong> {{ obj.age }}</p></a>
-                            <p><strong>Email:</strong> {{ obj.email }}</p>
-                            <p><strong>Gender:</strong> {{ obj.gender }}</p>
-                            <!-- Ajoutez d'autres informations du match ici -->
-                        </div>
-                        <div class="match-image">
-                            <img src="{% if match.profile_image %}{{ match.profile_image.url }}{% else %}{% static 'images/default-profile-image.jpg' %}{% endif %}" alt="Match Profile Image">
-                        </div>
-                    </li>
+                <li class="match">
+                    <div class="match-info">
+                        <h3>{{ obj.name }}</h3>
+                        <a href="{% url 'chat' obj.match_id%}">
+                            <p><strong>Age:</strong> {{ obj.age }}</p>
+                        </a>
+                        <p><strong>Email:</strong> {{ obj.email }}</p>
+                        <p><strong>Gender:</strong> {{ obj.gender }}</p>
+                        <!-- Ajoutez d'autres informations du match ici -->
+                    </div>
+                    <div class="match-image">
+                        <img src="{% if obj.profile_pic %}{{ obj.profile_pic }}{% else %}{% static 'images/default-profile-image.jpg' %}{% endif %}"
+                            alt="Match Profile Image">
+
+                    </div>
+                </li>
                 {% endfor %}
             </ul>
         </section>
     </main>
-    
+
     <footer>
         <p>&copy; {{ year }} My Dating App</p>
     </footer>
 </body>
+
 </html>

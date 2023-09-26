@@ -1,45 +1,47 @@
-
 {%load static%}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with {{ match.name }}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
     <header>
         <nav>
             <div class="logo">
                 <a href="{% url 'main' %}">
-                <h1>My Dating App</h1>
-            </a>
+                    <h1>My Dating App</h1>
+                </a>
             </div>
         </nav>
     </header>
-    
+
     <main>
         <section class="chat">
             <h2>Chat with {{ match.name }}</h2>
             <div class="chat-messages">
                 {% for message in chat_messages %}
-                    <div class="message {% if message.sent_by_me %}sent{% else %}received{% endif %}">
-                        <p>{{ message.text }}</p>
-                        <span class="timestamp">{{ message.timestamp }}</span>
-                    </div>
+                <div class="message {% if message.sent_by_me %}sent{% else %}received{% endif %}">
+                    <p>{{ message.body }}</p>
+                    <span class="timestamp">{{ message.timestamp }}</span>
+                </div>
                 {% endfor %}
             </div>
-            <form method="post" action="{% url 'chat' %}">
+            <form method="post" action="{% url 'chat' obj%}">
                 {% csrf_token %}
                 <textarea name="message" placeholder="Type your message..." required></textarea>
-                <button type="submit">Send</button>
+                <button type="submit" name="action" value="send">Send</button>
             </form>
         </section>
     </main>
-    
+
     <footer>
         <p>&copy; {{ year }} My Dating App</p>
     </footer>
 </body>
+
 </html>

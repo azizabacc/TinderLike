@@ -83,7 +83,9 @@ def signup(request):
 
 
 
+
 def like(request):
+
 	id_user = request.session.get("id_user")
 	url=request.build_absolute_uri(reverse('api:profilesFlow', args=[id_user]))
 	res = requests.get(url)
@@ -112,6 +114,7 @@ def like(request):
 		return render(request, 'like.html', {"profile": data[0], "picture" : dataPicture})
 
 
+
 def match(request):
 	id_user= request.session.get('id_user')
 	url=request.build_absolute_uri(reverse('api:myMatches', args=[id_user]))
@@ -119,12 +122,30 @@ def match(request):
 	if res.status_code == 200 : 
 		data = json.loads(res.text)
 		print(data)
-		return render(request, 'match.html',{"matches":data})
+		return render(request, 'match.html',{"matches": data})
 	else :
 		redirect('main')
 
-def chat(request):
-	return render(request, 'chat.html')
+
+def chat(request, match_id):
+    id_user = request.session.get('id_user')
+    res = requests.get('http://localhost:8000/apichat/conversation/{}/'.format(match_id))
+    chat_messages = json.loads(res.text)
+    print(chat_messages)
+
+    if res.status_code == 200:
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            if action == 'send':
+                message_body = request.POST.get('message') 
+                print(message_body)
+                res = requests.post(
+                    'http://localhost:8000/apichat/{user}/{match}/'.format(user=id_user, match=match_id),
+                    {"body": message_body, "id_user": id_user, "id_like": match_id}
+                )
+
+    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user})
+
 
 def profile(request):
 	# retrieve user_id

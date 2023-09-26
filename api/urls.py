@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-
 app_name='api' 
 
 urlpatterns = [
@@ -22,7 +21,7 @@ urlpatterns = [
     path('Likes/user/<int:id_user_liker>/declines/<int:id_user_liked>/', views.decline_user, name='dislikeUser'),
     path('Likes/<int:user_liker_id>/dismatch/<int:user_liked_id>/', views.dismatch),
 
-    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId, name='profilesFlow'),
+    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId),
     path('profilesFlow/women/<int:user_id>',views.profilesFlowWomenByUserId),
     path('profilesFlow/men/<int:user_id>',views.profilesFlowMenByUserId),
 

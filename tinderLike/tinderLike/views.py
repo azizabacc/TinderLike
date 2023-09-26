@@ -117,11 +117,6 @@ def match(request):
 	else :
 		redirect('main')
 
-import requests
-import json
-
-import requests
-import json
 
 def chat(request, match_id):
     id_user = request.session.get('id_user')
@@ -133,13 +128,12 @@ def chat(request, match_id):
         if request.method == 'POST':
             action = request.POST.get('action')
             if action == 'send':
-                message_body = request.POST.get('message')  
-
+                message_body = request.POST.get('message') 
+                print(message_body)
                 res = requests.post(
                     'http://localhost:8000/apichat/{user}/{match}/'.format(user=id_user, match=match_id),
-                    {'body': message_body, 'id_user': id_user, 'id_like': match_id}
+                    {"body": message_body, "id_user": id_user, "id_like": match_id}
                 )
-				
 
     return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user})
 

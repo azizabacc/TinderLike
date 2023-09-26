@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0nqa+hin*mc(&z=tg$i%!n8a$w(jxol*x2)$ms06he3=e)l6g0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['tinderlike-app-17303f5e385a.herokuapp.com','localhost']
 

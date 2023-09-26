@@ -5,6 +5,7 @@ from django.template import loader
 from django.contrib.auth import authenticate, login
 from .forms import UserCreationForm
 from django.contrib import messages
+from django.urls import reverse
 import requests
 import json
 
@@ -42,7 +43,8 @@ def signup(request):
 		form = UserCreationForm(request.POST)
 		if form.is_valid():
 			try : 
-				value = requests.post("http://localhost:8000/apiusers/add", request.POST)
+				url=request.build_absolute_uri(reverse('api:addUser'))
+				value = requests.post(url, request.POST)
 				data = json.loads(value.text)
 			
 				userData={
@@ -83,33 +85,40 @@ def signup(request):
 
 
 def like(request):
-    id_user = request.session.get("id_user")
-    
-    res = requests.get('http://localhost:8000/apiprofilesFlow/{}'.format(id_user))
 
-    if res.status_code == 200:
-        data = json.loads(res.text)
-        if request.method == 'POST':
-            action = request.POST.get('action')
-            if action == 'dislike':
-                res = requests.post('http://localhost:8000/apiLikes/user/{}/declines/{}/'.format(id_user, data[0]['id']))
-                return redirect('like')
-            elif action == 'like':
-                res = requests.post('http://localhost:8000/apiLikes/user/{}/likes/{}/'.format(id_user, data[0]['id']))
-                return redirect('like')
+	id_user = request.session.get("id_user")
+	url=request.build_absolute_uri(reverse('api:profilesFlow', args=[id_user]))
+	res = requests.get(url)
 
-    resPic = requests.get('http://localhost:8000/apipictures/getPicture/{}'.format(data[0].get('id')))
-    if resPic.status_code == 200: 
-        dataPicture = json.loads(resPic.text)  
-    else: 
-        dataPicture = {"img": 'nopic'}
+	if res.status_code == 200:
+		data = json.loads(res.text)
+		if request.method == 'POST':
+			action = request.POST.get('action')
+			if action == 'dislike':
+				likeUrl=request.build_absolute_uri(reverse('api:dislikeUser', args=[id_user,data[0]['id']]))
+				res = requests.post(likeUrl)
+				redirect('like')
+			elif action == 'like':
+				dislikeUrl=request.build_absolute_uri(reverse('api:likeUser', args=[id_user,data[0]['id']]))
+				res = requests.post(dislikeUrl)
+				redirect('like')
 
-    return render(request, 'like.html', {"profile": data[0], "picture": dataPicture})
+		picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[data[0].get('id')]))
+		resPic = requests.get(picUrl)
+		if resPic.status_code == 200 : 
+
+			dataPicture = json.loads(resPic.text)  
+			print(dataPicture[0])          
+		else : 
+			dataPicture = {"img" : 'nopic'}
+		return render(request, 'like.html', {"profile": data[0], "picture" : dataPicture})
+
 
 
 def match(request):
 	id_user= request.session.get('id_user')
-	res = requests.get('http://localhost:8000/apiLikes/usersMatches/{}/'.format(id_user))
+	url=request.build_absolute_uri(reverse('api:myMatches', args=[id_user]))
+	res = requests.get(url)
 	if res.status_code == 200 : 
 		data = json.loads(res.text)
 		print(data)
@@ -144,12 +153,15 @@ def profile(request):
 	# check if you're trying to post a new picture
 	if request.method == 'POST' and request.POST.get('addPicture') is not None  :
 		# 
-		res = requests.post('http://localhost:8000/apipictures/add/{}'.format(id_user),{'img':request.POST.get('addPicture')})
+		addUrl=request.build_absolute_uri(reverse('api:addPicture', args=[id_user]))
+		res = requests.post(addUrl,{'img':request.POST.get('addPicture')})
 		return redirect('profile')
 	else :	
-		res = requests.get('http://localhost:8000/apiusers/{}'.format(id_user))
+		url = request.build_absolute_uri(reverse('api:getOneUser', args=[id_user]))
+		res = requests.get(url)
 		data = json.loads(res.text)
-		resPicture = requests.get('http://localhost:8000/apipictures/getPicture/{}'.format(id_user))
+		picUrl = request.build_absolute_uri(reverse('api:getPicture', args=[id_user]))
+		resPicture = requests.get(picUrl)
 		if resPicture : 
 			# print(resPicture)
 			dataPicture=json.loads(resPicture.text)

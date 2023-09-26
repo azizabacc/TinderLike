@@ -47,7 +47,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api', include('api.urls')),
     path('test', views.show_user),
-    path('main', views.show_template, name='main'),
+    path('', views.show_template, name='main'),
     path('login',views.make_login, name='login'),
     path('signup',views.signup, name='signup'),
     path('profile',views.profile, name='profile'),

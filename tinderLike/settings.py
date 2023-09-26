@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import secrets
 from pathlib import Path
 from dotenv import dotenv_values
 import os
@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-0nqa+hin*mc(&z=tg$i%!n8a$w(jxol*x2)$ms06he3=e)l6g0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['tinderlike-app-17303f5e385a.herokuapp.com','localhost']
 
 
 # Application definition
@@ -102,15 +102,23 @@ WSGI_APPLICATION = 'tinderLike.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-print(config.get("DBNAME"))
+
 DATABASES = {
-   'default': {
+   'heroku': {
        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config.get("DBNAME"),
         'USER': config.get("DBUSER"),
         'PASSWORD': config.get("DBPASSWORD"),
         'HOST': config.get("DBHOST"),
         'PORT': config.get("DBPORT"),
+    },
+    'default' : {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("DBNAME"),
+        'USER': os.getenv("DBUSER"),
+        'PASSWORD': os.getenv("DBPASSWORD"),
+        'HOST': os.getenv("DBHOST"),
+        'PORT': os.getenv("DBPORT"),
     }
 }
 

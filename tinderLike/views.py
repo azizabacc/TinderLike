@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.urls import reverse
 import requests
 import json
-
+from django.core.exceptions import ObjectDoesNotExist
+import time
 
 def show_user(request):
 	res = requests.get("http://localhost:8000/usersList")
@@ -131,8 +132,38 @@ def chat(request, match_id):
     id_user = request.session.get('id_user')
     res = requests.get('http://localhost:8000/apichat/conversation/{}/'.format(match_id))
     chat_messages = json.loads(res.text)
-    print(chat_messages)
 
+    urlUsers =request.build_absolute_uri(reverse('api:usersMatched', args=[match_id]))
+    resUsers= requests.get(urlUsers)
+    dataUsers = json.loads(resUsers.text)
+    print("ici")
+    print(id_user)
+    print(dataUsers["user_liker"]["id"])
+    print(dataUsers["user_liked"]["id"])
+    if str(dataUsers["user_liker"]["id"]) == id_user :
+      print("same same")
+      me = dataUsers["user_liker"]["id"]
+      he = dataUsers["user_liked"]["id"]
+
+      myurl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liker"]["id"]]))
+      Pic1 = requests.get(myurl)
+      myPic = json.loads(Pic1.text)  
+
+      picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liked"]["id"]]))
+      resPic = requests.get(picUrl)
+      hisPic = json.loads(resPic.text) 
+    else:
+      me = dataUsers["user_liked"]["id"]
+      he = dataUsers["user_liker"]["id"]
+
+      picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liker"]["id"]]))
+      resPic = requests.get(picUrl)
+      hisPic= json.loads(resPic.text)  
+
+      myurl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liked"]["id"]]))
+      Pic1 = requests.get(myurl)
+      myPic = json.loads(Pic1.text) 
+    
     if res.status_code == 200:
         if request.method == 'POST':
             action = request.POST.get('action')
@@ -143,9 +174,20 @@ def chat(request, match_id):
                     'http://localhost:8000/apichat/{user}/{match}/'.format(user=id_user, match=match_id),
                     {"body": message_body, "id_user": id_user, "id_like": match_id}
                 )
-
-    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user})
-
+            elif action == 'delete':
+                message_id = request.POST.get('message_id')
+                res = requests.delete(
+                        'http://localhost:8000/apichat/{}/delete/'.format(message_id)
+					)
+            elif action == 'ok':
+                message_id = request.POST.get('message_id')
+                edited_message = request.POST.get('edited_message')
+                print('edit messaaaaaaaaaaage')
+                res = requests.patch(
+                        'http://localhost:8000/apichat/{}/edit/'.format(message_id)
+					,{"body": edited_message})
+				
+    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":me,"myPic":myPic,"he":he,"hisPic":hisPic} })
 
 def profile(request):
 	# retrieve user_id

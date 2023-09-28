@@ -20,7 +20,7 @@ import chat.routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tinderLike.settings')
 
-application = ProtocolTypeRouter(
+heroku_application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         # Just HTTP for now. (We can add other protocols later.)
@@ -31,4 +31,4 @@ application = ProtocolTypeRouter(
 )
 django.setup()
 
-heroku_application = get_default_application()
+application = get_default_application()

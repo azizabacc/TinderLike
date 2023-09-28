@@ -11,3 +11,6 @@ typing_extensions==4.8.0
 
 
 to install run ```pip install requirements.txt ```
+
+procfile :
+web: gunicorn tinderLike.wsgi

@@ -1,8 +1,10 @@
+{%load static%}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8"/>
     <title>Chat Room</title>
+    <audio id="notif" src="{% static 'sounds/notif.mp3' %}" preload="auto"></audio>
 </head>
 <body>
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
@@ -13,7 +15,7 @@
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
         const chatSocket = new WebSocket(
-            'wss://'
+            'ws://'
             + window.location.host
             + '/ws/chat/'
             + roomName
@@ -23,6 +25,8 @@
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             document.querySelector('#chat-log').value += (data.message + '\n');
+        
+            document.getElementById('notif').play()
         };
 
         chatSocket.onclose = function(e) {

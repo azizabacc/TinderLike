@@ -129,7 +129,8 @@ def match(request):
 
 def chat(request, match_id):
     id_user = request.session.get('id_user')
-    res = requests.get('http://localhost:8000/apichat/conversation/{}/'.format(match_id))
+    url=request.build_absolute_uri(reverse('api:conversation', args=[id_user]))
+    res = requests.get(url)
     chat_messages = json.loads(res.text)
     print(chat_messages)
 
@@ -139,8 +140,9 @@ def chat(request, match_id):
             if action == 'send':
                 message_body = request.POST.get('message') 
                 print(message_body)
+                urlChat=request.build_absolute_uri(reverse('api:sendMessage', args=[id_user, match_id]))
                 res = requests.post(
-                    'http://localhost:8000/apichat/{user}/{match}/'.format(user=id_user, match=match_id),
+                    ('url'),
                     {"body": message_body, "id_user": id_user, "id_like": match_id}
                 )
 
@@ -163,13 +165,14 @@ def profile(request):
 		picUrl = request.build_absolute_uri(reverse('api:getPicture', args=[id_user]))
 		resPicture = requests.get(picUrl)
 		if resPicture : 
-			# print(resPicture)
+			
 			dataPicture=json.loads(resPicture.text)
-			print(dataPicture)
+			
 			return render(request, 'profile.html',{"my_user": data , "my_picture" : dataPicture})
-			print(data)
+			
 		else :
 			return render(request, 'profile.html',{"my_user": data})
 
 def swagger_ui(request):
 	return render(request, 'swagger-ui.html')
+

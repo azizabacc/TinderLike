@@ -39,13 +39,10 @@ schema_view = get_schema_view(
 
 
 
-
-
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api', include('api.urls')),
+    path("chat/", include("chat.urls")),
     path('test', views.show_user),
     path('', views.show_template, name='main'),
     path('login',views.make_login, name='login'),

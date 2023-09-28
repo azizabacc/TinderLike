@@ -22,7 +22,7 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').insertAdjacentHTML("beforeend", data.message)
+            document.body.insertAdjacentHTML("beforeend", data.message)
         };
 
         chatSocket.onclose = function(e) {

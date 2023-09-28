@@ -109,7 +109,7 @@ WSGI_APPLICATION = 'tinderLike.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-   'default': {
+   'heroku': {
        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config.get("DBNAME"),
         'USER': config.get("DBUSER"),
@@ -117,7 +117,7 @@ DATABASES = {
         'HOST': config.get("DBHOST"),
         'PORT': config.get("DBPORT"),
     },
-    'heroku' : {
+    'default' : {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv("DBNAME"),
         'USER': os.getenv("DBUSER"),
@@ -174,11 +174,20 @@ STATICFILES_DIRS = (
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ASGI_APPLICATION = "tinderLike.asgi.application"
 CHANNEL_LAYERS = {
-    "default": {
+    "heroku": {
         "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
         "CONFIG": {
             "hosts":[{
-            "address": "rediss://:p951f697f6be4af8bca56f24fe4cce9b7d3f68756e275e714e97b05741c92a29e@ec2-44-205-133-1.compute-1.amazonaws.com:17160",  # "REDIS_TLS_URL"
+            "address": config.get("REDIS_URL"),  # "REDIS_TLS_URL"
+            "ssl_cert_reqs": None,
+        }]
+        },
+    },
+     "default": {
+        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+        "CONFIG": {
+            "hosts":[{
+            "address": os.getenv("REDIS_URL"),  # "REDIS_TLS_URL"
             "ssl_cert_reqs": None,
         }]
         },

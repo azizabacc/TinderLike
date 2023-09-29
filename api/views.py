@@ -329,10 +329,7 @@ def send_message(request, id_user, id_like):
         body = request.data.get("body")
         id_user = request.data.get("id_user")
         id_like = request.data.get("id_like")
-
-        # check compatibility
-        if id_user != user.id or id_like != like.id:
-            return Response({"error": "Mismatch between user and like IDs"}, status=status.HTTP_400_BAD_REQUEST)
+     
 
         # create message
         message = Messages(body=body, id_user=user, id_like=like)

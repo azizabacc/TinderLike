@@ -20,6 +20,8 @@ idna==3.4
 incremental==22.10.0
 inflection==0.5.1
 msgpack==1.0.6
+numpy==1.26.0
+opencv-python==4.8.1.78
 packaging==23.1
 psycopg2-binary==2.9.7
 pyasn1==0.5.0

@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.urls import reverse
 import requests
 import json
-
+import time
 
 def show_user(request):
 	res = requests.get("http://localhost:8000/usersList")
@@ -131,8 +131,38 @@ def chat(request, match_id):
     id_user = request.session.get('id_user')
     res = requests.get('http://localhost:8000/apichat/conversation/{}/'.format(match_id))
     chat_messages = json.loads(res.text)
-    print(chat_messages)
 
+    urlUsers =request.build_absolute_uri(reverse('api:usersMatched', args=[match_id]))
+    resUsers= requests.get(urlUsers)
+    dataUsers = json.loads(resUsers.text)
+    print("ici")
+    print(type(id_user))
+    print(type(dataUsers["user_liker"]["id"]))
+    print(dataUsers["user_liked"]["id"])
+    if str(dataUsers["user_liker"]["id"]) == id_user :
+      me = dataUsers["user_liker"]["id"]
+      he = dataUsers["user_liked"]["id"]
+      hisName =dataUsers["user_liked"]["name"]
+
+      myurl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liker"]["id"]]))
+      Pic1 = requests.get(myurl)
+      myPic = json.loads(Pic1.text)  
+
+      picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liked"]["id"]]))
+      resPic = requests.get(picUrl)
+      hisPic = json.loads(resPic.text) 
+    else:
+      me = dataUsers["user_liked"]["id"]
+      he = dataUsers["user_liker"]["id"]
+      hisName =dataUsers["user_liked"]["name"]
+      picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liker"]["id"]]))
+      resPic = requests.get(picUrl)
+      hisPic= json.loads(resPic.text)  
+
+      myurl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liked"]["id"]]))
+      Pic1 = requests.get(myurl)
+      myPic = json.loads(Pic1.text) 
+    
     if res.status_code == 200:
         if request.method == 'POST':
             action = request.POST.get('action')
@@ -143,9 +173,19 @@ def chat(request, match_id):
                     'http://localhost:8000/apichat/{user}/{match}/'.format(user=id_user, match=match_id),
                     {"body": message_body, "id_user": id_user, "id_like": match_id}
                 )
-
-    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user})
-
+            elif action == 'delete':
+                message_id = request.POST.get('message_id')
+                res = requests.delete(
+                        'http://localhost:8000/apichat/{}/delete/'.format(message_id)
+					)
+            elif action == 'ok':
+                message_id = request.POST.get('message_id')
+                edited_message = request.POST.get('edited_message')
+                res = requests.patch(
+                        'http://localhost:8000/apichat/{}/edit/'.format(message_id)
+					,{"body": edited_message})
+           
+    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":str(me),"myPic":myPic,"he":str(he),"hisPic":hisPic,"hisName":hisName} })
 
 def profile(request):
 	# retrieve user_id
@@ -173,3 +213,34 @@ def profile(request):
 
 def swagger_ui(request):
 	return render(request, 'swagger-ui.html')
+
+
+#live stream
+from django.shortcuts import render
+from django.http import HttpResponse,StreamingHttpResponse
+from django.http import HttpResponseServerError
+from django.views.decorators import gzip
+import cv2
+import time
+
+
+def get_frame():
+    camera =cv2.VideoCapture(0) #open the webcam video stream (port zero) and enters an infinite loop
+    while True:
+		#At each iteration of the loop
+        _, img = camera.read()# it reads an image from the webcam
+        imgencode=cv2.imencode('.jpg',img)[1] # encodes that image in JPEG format
+        stringData=imgencode.tostring() #converts it into a byte string 
+        yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n'+stringData+b'\r\n')# yield : to send this byte string with specific headers that set the content type. 
+    del(camera)#delete it after
+    
+def indexscreen(request): 
+	template = "screens.html"
+	return render(request,template)
+
+@gzip.gzip_page
+def dynamic_stream(request,stream_path="video"):
+    try :
+        return StreamingHttpResponse(get_frame(),content_type="multipart/x-mixed-replace;boundary=frame")#send data continuously
+    except :
+        return "error"

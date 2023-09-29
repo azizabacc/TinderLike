@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'tinderLike.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-   'heroku': {
+   'default': {
        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config.get("DBNAME"),
         'USER': config.get("DBUSER"),
@@ -112,7 +112,7 @@ DATABASES = {
         'HOST': config.get("DBHOST"),
         'PORT': config.get("DBPORT"),
     },
-    'default' : {
+    'heroku' : {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv("DBNAME"),
         'USER': os.getenv("DBUSER"),

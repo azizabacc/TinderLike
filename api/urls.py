@@ -17,11 +17,11 @@ urlpatterns = [
     path('Likes/user/<int:id_user_liker>/likes/<int:id_user_liked>/', views.like_user, name='likeUser'),
     path('Likes/usersMatches/<int:user_id>/', views.getMatchesByUserId, name='myMatches'),
     path('Likes/usersRelation/<int:user_id>',views.getLikesByUserId),
-    path('Likes/usersMatched/<int:match_id>',views.get_users_by_match_id),
+    path('Likes/usersMatched/<int:match_id>',views.get_users_by_match_id, name='usersMatched'),
     path('Likes/user/<int:id_user_liker>/declines/<int:id_user_liked>/', views.decline_user, name='dislikeUser'),
     path('Likes/<int:user_liker_id>/dismatch/<int:user_liked_id>/', views.dismatch),
 
-    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId),
+    path('profilesFlow/<int:user_id>',views.profilesFlowByUserId, name='profilesFlow'),
     path('profilesFlow/women/<int:user_id>',views.profilesFlowWomenByUserId),
     path('profilesFlow/men/<int:user_id>',views.profilesFlowMenByUserId),
 

@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{% url 'main' %}">
+                    <h1>My Dating App</h1>
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="error">
+            <h2>Error</h2>
+            <p>{{ error_message }}</p>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; {{ year }} My Dating App</p>
+    </footer>
+</body>
+</html>

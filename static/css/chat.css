@@ -1,0 +1,29 @@
+
+// chat.html
+.img-chat{
+    width: 60px;
+    height: 60px;
+
+}
+.chat-messages{
+    height : 100vh;
+}
+.received{
+    display: flex;
+    background-color: #c5c1c1;
+    border-radius: 10px;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+.sent{
+    display: flex;
+    background-color: red;
+    border-radius: 10px;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+.hidden{
+    display:none ;
+}

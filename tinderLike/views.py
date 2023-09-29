@@ -8,7 +8,6 @@ from django.contrib import messages
 from django.urls import reverse
 import requests
 import json
-from django.core.exceptions import ObjectDoesNotExist
 import time
 
 def show_user(request):
@@ -137,13 +136,13 @@ def chat(request, match_id):
     resUsers= requests.get(urlUsers)
     dataUsers = json.loads(resUsers.text)
     print("ici")
-    print(id_user)
-    print(dataUsers["user_liker"]["id"])
+    print(type(id_user))
+    print(type(dataUsers["user_liker"]["id"]))
     print(dataUsers["user_liked"]["id"])
     if str(dataUsers["user_liker"]["id"]) == id_user :
-      print("same same")
       me = dataUsers["user_liker"]["id"]
       he = dataUsers["user_liked"]["id"]
+      hisName =dataUsers["user_liked"]["name"]
 
       myurl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liker"]["id"]]))
       Pic1 = requests.get(myurl)
@@ -155,7 +154,7 @@ def chat(request, match_id):
     else:
       me = dataUsers["user_liked"]["id"]
       he = dataUsers["user_liker"]["id"]
-
+      hisName =dataUsers["user_liked"]["name"]
       picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liker"]["id"]]))
       resPic = requests.get(picUrl)
       hisPic= json.loads(resPic.text)  
@@ -182,12 +181,11 @@ def chat(request, match_id):
             elif action == 'ok':
                 message_id = request.POST.get('message_id')
                 edited_message = request.POST.get('edited_message')
-                print('edit messaaaaaaaaaaage')
                 res = requests.patch(
                         'http://localhost:8000/apichat/{}/edit/'.format(message_id)
 					,{"body": edited_message})
-				
-    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":me,"myPic":myPic,"he":he,"hisPic":hisPic} })
+           
+    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":str(me),"myPic":myPic,"he":str(he),"hisPic":hisPic,"hisName":hisName} })
 
 def profile(request):
 	# retrieve user_id
@@ -215,3 +213,34 @@ def profile(request):
 
 def swagger_ui(request):
 	return render(request, 'swagger-ui.html')
+
+
+#live stream
+from django.shortcuts import render
+from django.http import HttpResponse,StreamingHttpResponse
+from django.http import HttpResponseServerError
+from django.views.decorators import gzip
+import cv2
+import time
+
+
+def get_frame():
+    camera =cv2.VideoCapture(0) #open the webcam video stream (port zero) and enters an infinite loop
+    while True:
+		#At each iteration of the loop
+        _, img = camera.read()# it reads an image from the webcam
+        imgencode=cv2.imencode('.jpg',img)[1] # encodes that image in JPEG format
+        stringData=imgencode.tostring() #converts it into a byte string 
+        yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n'+stringData+b'\r\n')# yield : to send this byte string with specific headers that set the content type. 
+    del(camera)#delete it after
+    
+def indexscreen(request): 
+	template = "screens.html"
+	return render(request,template)
+
+@gzip.gzip_page
+def dynamic_stream(request,stream_path="video"):
+    try :
+        return StreamingHttpResponse(get_frame(),content_type="multipart/x-mixed-replace;boundary=frame")#send data continuously
+    except :
+        return "error"

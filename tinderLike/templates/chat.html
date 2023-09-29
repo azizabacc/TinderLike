@@ -1,4 +1,7 @@
+
+
 {%load static%}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with {{ match.name }}</title>
     <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+    
 </head>
 
 <body>
@@ -22,11 +26,11 @@
 
     <main>
         <section class="chat">
-            <h2>Chat with {{ match.name }}</h2>
-            <div class="chat-messages">
-                {{users.he}}
+            <h2>Chat with {{users.hisName}}</h2>
+
+            <div class="chat-messages" id="{{id_user}}">
                 {% for message in chat_messages %}
-                <div class="message{% if users.me == id_user %}sent{% else %}received{% endif %}">
+                <div class="message" id="{{message.id_user}}" >
                     <div class="img-chat">
                         <img src="{% if picture.img %}{{ picture.img }}{% else %}{% static 'images/default-profile-image.jpg' %}{% endif %}"
                             alt="Profile Image">
@@ -37,12 +41,12 @@
                         <input type="hidden" name="message_id" value="{{ message.id }}">
                         <button type="submit" name="action" value="delete">Delete</button>
                     </form>
-                    <form method="post" action="{% url 'chat' obj %}">
-                        {% csrf_token %}
+                   
                         <input type="hidden" name="message_id" value="{{ message.id }}">
                         <button type="submit" name="action" value="edit" class="edit-button">Edit</button>
-                    </form>
-                    <form class="edit-form hidden" method="post" action="{% url 'chat' obj %}" id="edit-form-{{ message.id }}">
+                 
+                    <form class="edit-form hidden" method="post" action="{% url 'chat' obj %}"
+                        id="edit-form-{{ message.id }}">
                         {% csrf_token %}
                         <input type="hidden" name="message_id" value="{{ message.id }}">
                         <textarea class="edit-textarea" name="edited_message">{{ message.body }}</textarea>
@@ -50,10 +54,14 @@
                     </form>
                     <span class="timestamp">{{ message.timestamp }}</span>
                 </div>
-               
-                
+
+
                 {% endfor %}
             </div>
+            {% include 'screens.html' %}
+            {% block content %}
+
+            {% endblock content %}
             <form method="post" action="{% url 'chat' obj %}" onsubmit="resetTextarea()">
                 {% csrf_token %}
                 <textarea id="message" name="message" placeholder="Type your message..." required></textarea>
@@ -65,22 +73,8 @@
     <footer>
         <p>&copy; {{ year }} My Dating App</p>
     </footer>
-    <script>
-        function resetTextarea() {
-            document.getElementById('message').value = '';
-        }
-        const editButtons = document.querySelectorAll('.edit-button');
-        const editTextareas = document.querySelectorAll('.edit-form');
-
-    editButtons.forEach((button, index) => {
-        button.addEventListener('click', () => {
-            // Affiche le champ de texte correspondant au bouton "Edit" cliqué
-            editTextareas[index].classList.remove('hidden');
-            // Masque le paragraphe contenant le texte
-/*             editButtons[index].previousElementSibling.style.display = 'none';
- */        });
-    });
-    </script>
+    <script type="module" src="{% static 'js/chat.js' %}"></script>
+    
 </body>
 
 </html>

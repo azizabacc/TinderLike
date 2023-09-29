@@ -15,4 +15,7 @@
       "scripts": {
         "test": "./manage.py test --debug-mode"
       }
+    }
+  }
+}
     

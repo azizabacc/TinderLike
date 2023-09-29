@@ -8,9 +8,17 @@
 .chat-messages{
     height : 100vh;
 }
-.messagereceived{
+.received{
     display: flex;
     background-color: #c5c1c1;
+    border-radius: 10px;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+.sent{
+    display: flex;
+    background-color: red;
     border-radius: 10px;
     width: 100%;
     justify-content: space-between;

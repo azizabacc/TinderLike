@@ -47,7 +47,7 @@ def room(request, room_name):
     else:
       me = dataUsers["user_liked"]["id"]
       he = dataUsers["user_liker"]["id"]
-      hisName =dataUsers["user_liked"]["name"]
+      hisName =dataUsers["user_liker"]["name"]
       picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[dataUsers["user_liker"]["id"]]))
       resPic = requests.get(picUrl)
       hisPic= json.loads(resPic.text)  

@@ -167,30 +167,30 @@ def chat(request, match_id):
       Pic1 = requests.get(myurl)
       myPic = json.loads(Pic1.text) 
     
-    if res.status_code == 200:
-        if request.method == 'POST':
-            action = request.POST.get('action')
-            if action == 'send':
-                message_body = request.POST.get('message') 
-                print(message_body)
-                urlChat=request.build_absolute_uri(reverse('api:sendMessage', args=[id_user, match_id]))
-                res = requests.post(
-                    ('url'),
-                    {"body": message_body, "id_user": id_user, "id_like": match_id}
-                )
-            elif action == 'delete':
-                message_id = request.POST.get('message_id')
-                res = requests.delete(
-                        'http://localhost:8000/apichat/{}/delete/'.format(message_id)
-					)
-            elif action == 'ok':
-                message_id = request.POST.get('message_id')
-                edited_message = request.POST.get('edited_message')
-                res = requests.patch(
-                        'http://localhost:8000/apichat/{}/edit/'.format(message_id)
-					,{"body": edited_message})
+    # if res.status_code == 200:
+    #     if request.method == 'POST':
+    #         action = request.POST.get('action')
+    #         if action == 'send':
+    #             message_body = request.POST.get('message') 
+    #             print(message_body)
+    #             urlChat=request.build_absolute_uri(reverse('api:sendMessage', args=[id_user, match_id]))
+    #             res = requests.post(
+    #                 ('url'),
+    #                 {"body": message_body, "id_user": id_user, "id_like": match_id}
+    #             )
+    #         elif action == 'delete':
+    #             message_id = request.POST.get('message_id')
+    #             res = requests.delete(
+    #                     'http://localhost:8000/apichat/{}/delete/'.format(message_id)
+	# 				)
+    #         elif action == 'ok':
+    #             message_id = request.POST.get('message_id')
+    #             edited_message = request.POST.get('edited_message')
+    #             res = requests.patch(
+    #                     'http://localhost:8000/apichat/{}/edit/'.format(message_id)
+	# 				,{"body": edited_message})
            
-    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":str(me),"myPic":myPic,"he":str(he),"hisPic":hisPic,"hisName":hisName} })
+    return render(request, 'room.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":str(me),"myPic":myPic,"he":str(he),"hisPic":hisPic,"hisName":hisName} })
 
 def profile(request):
 	# retrieve user_id
@@ -218,6 +218,8 @@ def profile(request):
 
 def swagger_ui(request):
 	return render(request, 'swagger-ui.html')
+
+
 
 
 def get_frame():

@@ -136,7 +136,7 @@ else :
     },
 
 }
-print(DATABASES)
+
 
 
 # Password validation

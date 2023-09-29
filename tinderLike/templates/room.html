@@ -4,6 +4,22 @@
     <meta charset="utf-8"/>
     <title>Chat Room</title>
 </head>
+  <header>
+        <nav>
+            <div class="logo">
+                
+                <h1>My Dating App</h1>
+        
+            </div>
+            <ul>
+                <li><a href="{% url 'login' %}">Home</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'like' %}">Find your love</a></li>
+                <li><a href="{% url 'match' %}">My matches</a></li>
+                <li><a href="{% url 'screens' %}">stream</a></li>
+            </ul>
+        </nav>
+    </header>
 <body>
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>

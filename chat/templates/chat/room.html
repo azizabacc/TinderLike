@@ -7,7 +7,24 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/room.css' %}">
     <audio id="notif" src="{% static 'sounds/notif.mp3' %}" preload="auto"></audio>
 </head>
+ 
 <body>
+       <header>
+        <nav>
+            <div class="logo">
+                
+                <h1>My Dating App</h1>
+        
+            </div>
+            <ul>
+                <li><a href="{% url 'login' %}">Home</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'like' %}">Find your love</a></li>
+                <li><a href="{% url 'match' %}">My matches</a></li>
+                <li><a href="{% url 'screens' %}">stream</a></li>
+            </ul>
+        </nav>
+    </header>
     <div id="chat-container">
         <div id="chat-log">
             <!-- Messages seront ajoutés ici -->
@@ -17,6 +34,7 @@
             <input id="chat-message-submit" type="button" value="Send">
         </div>
     </div>
+     
     {{ room_name|json_script:"room-name" }}
     {{ users|json_script:"users" }}
     {{ chat_messages|json_script:"messages" }}
@@ -35,13 +53,23 @@
 
         messages.forEach(element => {
             const messageDiv = document.createElement('div');
+            const messageInfoDiv = document.createElement('h6');
+            const message=document.createElement('p')
+
             messageDiv.className = 'message';
             
             if (element.id_user == users.me) {
+
                 messageDiv.classList.add('my-message');
-                messageDiv.textContent = `me: ${element.body}`;
+                messageDiv.textContent = `${element.body}`;
             } else {
-                messageDiv.textContent = `${users.hisName}: ${element.body}`;
+                
+                messageInfoDiv.textContent = `${users.hisName}:`;
+                message.textContent=`${element.body}`
+                messageDiv.appendChild(messageInfoDiv);
+                messageDiv.appendChild(message)
+
+                    
             }
             
             chatLog.appendChild(messageDiv);
@@ -50,7 +78,7 @@
         scrollToBottom();
 
         const chatSocket = new WebSocket(
-            'wss://'
+            'ws://'
             + window.location.host
             + '/ws/chat/'
             + roomName
@@ -60,13 +88,18 @@
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             const messageDiv = document.createElement('div');
+            const messageInfoDiv = document.createElement('h6');
+            const message=document.createElement('p')
             messageDiv.className = 'message';
             
             if (data.user == users.me) {
            
             } else {
-                messageDiv.textContent = `${users.hisName}: 
-                ${data.message}`;
+
+                messageInfoDiv.textContent = `${users.hisName}:`;
+                message.textContent=`${data.message}`
+                messageDiv.appendChild(messageInfoDiv);
+                messageDiv.appendChild(message)
                 document.getElementById('notif').play();
                 chatLog.appendChild(messageDiv);
             }

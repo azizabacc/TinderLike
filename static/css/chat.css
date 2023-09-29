@@ -27,3 +27,8 @@
 .hidden{
     display:none ;
 }
+
+h6 {
+    padding: 5px;
+  margin: 0;
+}

@@ -184,9 +184,10 @@ def getMatchesByUserId(request, user_id):
     matched_users = []
 
     for like in likes:
-        profile_picture = Pictures.objects.filter(id_user=like.id_user_liker_id, profile=True).first()
-        if not profile_picture:
-            profile_picture = Pictures.objects.filter(id_user=like.id_user_liked_id, profile=True).first()
+        if like.id_user_liked_id == user_id :
+            profile_picture = Pictures.objects.filter(id_user=like.id_user_liker_id).first()
+        else :
+            profile_picture = Pictures.objects.filter(id_user=like.id_user_liked_id).first()
 
         serializer = PictureSerializer(profile_picture)
 

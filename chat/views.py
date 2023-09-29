@@ -21,7 +21,7 @@ import time
 
 def room(request, room_name):
     id_user = request.session.get('id_user')
-    url=request.build_absolute_uri(reverse('api:conversation', args=[id_user]))
+    url=request.build_absolute_uri(reverse('api:conversation', args=[room_name]))
     res = requests.get(url)
     chat_messages = json.loads(res.text)
 

@@ -1,18 +1,81 @@
-{%load static%}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8"/>
     <title>Chat Room</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/room.css' %}">
     <audio id="notif" src="{% static 'sounds/notif.mp3' %}" preload="auto"></audio>
 </head>
+ 
 <body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
+       <header>
+        <nav>
+            <div class="logo">
+                
+                <h1>My Dating App</h1>
+        
+            </div>
+            <ul>
+                <li><a href="{% url 'login' %}">Home</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'like' %}">Find your love</a></li>
+                <li><a href="{% url 'match' %}">My matches</a></li>
+                <li><a href="{% url 'screens' %}">stream</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div id="chat-container">
+        <div id="chat-log">
+            <!-- Messages seront ajoutés ici -->
+        </div>
+        <div id="input-container">
+            <input id="chat-message-input" type="text" placeholder="Type a message...">
+            <input id="chat-message-submit" type="button" value="Send">
+        </div>
+    </div>
+     
     {{ room_name|json_script:"room-name" }}
+    {{ users|json_script:"users" }}
+    {{ chat_messages|json_script:"messages" }}
     <script>
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const users = JSON.parse(document.getElementById('users').textContent);
+        const messages = JSON.parse(document.getElementById('messages').textContent);
+
+        const chatLog = document.querySelector('#chat-log');
+        const chatMessageInput = document.querySelector('#chat-message-input');
+        const chatMessageSubmit = document.querySelector('#chat-message-submit');
+
+        function scrollToBottom() {
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        messages.forEach(element => {
+            const messageDiv = document.createElement('div');
+            const messageInfoDiv = document.createElement('h6');
+            const message=document.createElement('p')
+
+            messageDiv.className = 'message';
+            
+            if (element.id_user == users.me) {
+
+                messageDiv.classList.add('my-message');
+                messageDiv.textContent = `${element.body}`;
+            } else {
+                
+                messageInfoDiv.textContent = `${users.hisName}:`;
+                message.textContent=`${element.body}`
+                messageDiv.appendChild(messageInfoDiv);
+                messageDiv.appendChild(message)
+
+                    
+            }
+            
+            chatLog.appendChild(messageDiv);
+        });
+
+        scrollToBottom();
 
         const chatSocket = new WebSocket(
             'ws://'
@@ -24,29 +87,53 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
-        
-            document.getElementById('notif').play()
+            const messageDiv = document.createElement('div');
+            const messageInfoDiv = document.createElement('h6');
+            const message=document.createElement('p')
+            messageDiv.className = 'message';
+            
+            if (data.user == users.me) {
+           
+            } else {
+
+                messageInfoDiv.textContent = `${users.hisName}:`;
+                message.textContent=`${data.message}`
+                messageDiv.appendChild(messageInfoDiv);
+                messageDiv.appendChild(message)
+                document.getElementById('notif').play();
+                chatLog.appendChild(messageDiv);
+            }
+            
+            scrollToBottom();
         };
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
 
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
+        chatMessageInput.focus();
+        chatMessageInput.addEventListener('keyup', function(e) {
+            if (e.keyCode === 13) {  // Enter key
+                chatMessageSubmit.click();
             }
-        };
+        });
 
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
+        chatMessageSubmit.onclick = function(e) {
+            const message = chatMessageInput.value;
             chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
+                'message': message,
+                'user': users.me,
+                'roomName': roomName,
+                'host': window.location.host
+            }))
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.classList.add('my-message');
+            messageDiv.textContent = `${message}`;
+            chatLog.appendChild(messageDiv);
+            scrollToBottom()
+            ;
+            chatMessageInput.value = '';
         };
     </script>
 </body>

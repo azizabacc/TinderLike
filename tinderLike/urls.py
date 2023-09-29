@@ -54,7 +54,7 @@ urlpatterns = [
     path('Doc/', schema_view.with_ui('swagger', cache_timeout=0),
         name='schema-swagger-ui'),
     path('screens/', views.indexscreen, name='screens'),
-    re_path(r'^(?P<stream_path>(.*?))/$',views.dynamic_stream,name="videostream"),  
-    re_path(r'^stream/$',views.indexscreen),
+    # re_path(r'^(?P<stream_path>(.*?))/$',views.dynamic_stream,name="videostream"),  
+    # re_path(r'^stream/$',views.indexscreen),
 
     ]

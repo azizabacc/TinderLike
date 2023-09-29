@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matches</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/match.css' %}">
 </head>
 
 <body>
@@ -17,6 +17,13 @@
                     <h1>My Dating App</h1>
                 </a>
             </div>
+                  <ul>
+                <li><a href="{% url 'login' %}">Home</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'like' %}">Find your love</a></li>
+                <li><a href="{% url 'match' %}">My matches</a></li>
+                <li><a href="{% url 'screens' %}">stream</a></li>
+            </ul>
         </nav>
     </header>
 
@@ -28,10 +35,12 @@
                 {% for obj in matches %}
                 <li class="match">
                     <div class="match-info">
+                        
                         <h3>{{ obj.name }}</h3>
-                        <a href="{% url 'chat' obj.match_id%}">
-                            <p><strong>Age:</strong> {{ obj.age }}</p>
-                        </a>
+                     
+
+                        <p><strong>Age:</strong> {{ obj.age }}</p>
+                        
                         <p><strong>Email:</strong> {{ obj.email }}</p>
                         <p><strong>Gender:</strong> {{ obj.gender }}</p>
                         <!-- Ajoutez d'autres informations du match ici -->
@@ -41,9 +50,14 @@
                             alt="Match Profile Image">
 
                     </div>
+                    <a href="{% url 'room' obj.match_id%}">
+                    <button type="button">Chat</button>
+                </a>
                 </li>
                 {% endfor %}
+               
             </ul>
+            
         </section>
     </main>
 

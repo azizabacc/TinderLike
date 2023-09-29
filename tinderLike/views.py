@@ -88,47 +88,51 @@ def signup(request):
 
 
 def like(request):
+	try :
+		id_user = request.session.get("id_user")
+		url=request.build_absolute_uri(reverse('api:profilesFlow', args=[id_user]))
+		res = requests.get(url)
 
-	id_user = request.session.get("id_user")
-	url=request.build_absolute_uri(reverse('api:profilesFlow', args=[id_user]))
-	res = requests.get(url)
+		if res.status_code == 200:
+			data = json.loads(res.text)
+			if request.method == 'POST':
+				action = request.POST.get('action')
+				if action == 'dislike':
+					likeUrl=request.build_absolute_uri(reverse('api:dislikeUser', args=[id_user,data[0]['id']]))
+					res = requests.post(likeUrl)
+					redirect('like')
+				elif action == 'like':
+					dislikeUrl=request.build_absolute_uri(reverse('api:likeUser', args=[id_user,data[0]['id']]))
+					res = requests.post(dislikeUrl)
+					redirect('like')
 
-	if res.status_code == 200:
-		data = json.loads(res.text)
-		if request.method == 'POST':
-			action = request.POST.get('action')
-			if action == 'dislike':
-				likeUrl=request.build_absolute_uri(reverse('api:dislikeUser', args=[id_user,data[0]['id']]))
-				res = requests.post(likeUrl)
-				redirect('like')
-			elif action == 'like':
-				dislikeUrl=request.build_absolute_uri(reverse('api:likeUser', args=[id_user,data[0]['id']]))
-				res = requests.post(dislikeUrl)
-				redirect('like')
+			picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[data[0].get('id')]))
+			resPic = requests.get(picUrl)
+			if resPic.status_code == 200 : 
 
-		picUrl=request.build_absolute_uri(reverse('api:getPicture', args=[data[0].get('id')]))
-		resPic = requests.get(picUrl)
-		if resPic.status_code == 200 : 
-
-			dataPicture = json.loads(resPic.text)  
-			print(dataPicture[0])          
-		else : 
-			dataPicture = {"img" : 'nopic'}
-		return render(request, 'like.html', {"profile": data[0], "picture" : dataPicture})
+				dataPicture = json.loads(resPic.text)  
+				print(dataPicture[0])          
+			else : 
+				dataPicture = {"img" : 'nopic'}
+			return render(request, 'like.html', {"profile": data[0], "picture" : dataPicture})
+	except Exception as e :
+		return render(request, 'homepage.html')
 
 
 
 def match(request):
-	id_user= request.session.get('id_user')
-	url=request.build_absolute_uri(reverse('api:myMatches', args=[id_user]))
-	res = requests.get(url)
-	if res.status_code == 200 : 
-		data = json.loads(res.text)
-		print(data)
-		return render(request, 'match.html',{"matches": data})
-	else :
-		redirect('main')
-
+	try :
+		id_user= request.session.get('id_user')
+		url=request.build_absolute_uri(reverse('api:myMatches', args=[id_user]))
+		res = requests.get(url)
+		if res.status_code == 200 : 
+			data = json.loads(res.text)
+			print(data)
+			return render(request, 'match.html',{"matches": data})
+		else :
+			redirect('main')
+	except Exception as e :
+		return render(request, 'homepage.html')
 
 def chat(request, match_id):
     id_user = request.session.get('id_user')
@@ -167,30 +171,30 @@ def chat(request, match_id):
       Pic1 = requests.get(myurl)
       myPic = json.loads(Pic1.text) 
     
-    if res.status_code == 200:
-        if request.method == 'POST':
-            action = request.POST.get('action')
-            if action == 'send':
-                message_body = request.POST.get('message') 
-                print(message_body)
-                urlChat=request.build_absolute_uri(reverse('api:sendMessage', args=[id_user, match_id]))
-                res = requests.post(
-                    ('url'),
-                    {"body": message_body, "id_user": id_user, "id_like": match_id}
-                )
-            elif action == 'delete':
-                message_id = request.POST.get('message_id')
-                res = requests.delete(
-                        'http://localhost:8000/apichat/{}/delete/'.format(message_id)
-					)
-            elif action == 'ok':
-                message_id = request.POST.get('message_id')
-                edited_message = request.POST.get('edited_message')
-                res = requests.patch(
-                        'http://localhost:8000/apichat/{}/edit/'.format(message_id)
-					,{"body": edited_message})
+    # if res.status_code == 200:
+    #     if request.method == 'POST':
+    #         action = request.POST.get('action')
+    #         if action == 'send':
+    #             message_body = request.POST.get('message') 
+    #             print(message_body)
+    #             urlChat=request.build_absolute_uri(reverse('api:sendMessage', args=[id_user, match_id]))
+    #             res = requests.post(
+    #                 ('url'),
+    #                 {"body": message_body, "id_user": id_user, "id_like": match_id}
+    #             )
+    #         elif action == 'delete':
+    #             message_id = request.POST.get('message_id')
+    #             res = requests.delete(
+    #                     'http://localhost:8000/apichat/{}/delete/'.format(message_id)
+	# 				)
+    #         elif action == 'ok':
+    #             message_id = request.POST.get('message_id')
+    #             edited_message = request.POST.get('edited_message')
+    #             res = requests.patch(
+    #                     'http://localhost:8000/apichat/{}/edit/'.format(message_id)
+	# 				,{"body": edited_message})
            
-    return render(request, 'chat.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":str(me),"myPic":myPic,"he":str(he),"hisPic":hisPic,"hisName":hisName} })
+    return render(request, 'room.html', {"chat_messages": chat_messages, "obj": match_id, "id_user": id_user, "users":{"me":str(me),"myPic":myPic,"he":str(he),"hisPic":hisPic,"hisName":hisName} })
 
 def profile(request):
 	# retrieve user_id
@@ -220,24 +224,26 @@ def swagger_ui(request):
 	return render(request, 'swagger-ui.html')
 
 
-def get_frame():
-    camera =cv2.VideoCapture(0) #open the webcam video stream (port zero) and enters an infinite loop
-    while True:
-		#At each iteration of the loop
-        _, img = camera.read()# it reads an image from the webcam
-        imgencode=cv2.imencode('.jpg',img)[1] # encodes that image in JPEG format
-        stringData=imgencode.tostring() #converts it into a byte string 
-        yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n'+stringData+b'\r\n')# yield : to send this byte string with specific headers that set the content type. 
-    del(camera)#delete it after
+
+
+# def get_frame():
+#     camera =cv2.VideoCapture(0) #open the webcam video stream (port zero) and enters an infinite loop
+#     while True:
+# 		#At each iteration of the loop
+#         _, img = camera.read()# it reads an image from the webcam
+#         imgencode=cv2.imencode('.jpg',img)[1] # encodes that image in JPEG format
+#         stringData=imgencode.tostring() #converts it into a byte string 
+#         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n'+stringData+b'\r\n')# yield : to send this byte string with specific headers that set the content type. 
+#     del(camera)#delete it after
     
 def indexscreen(request): 
 	template = "screens.html"
 	return render(request,template)
 
-@gzip.gzip_page
-def dynamic_stream(request,stream_path="video"):
-    try :
-        return StreamingHttpResponse(get_frame(),content_type="multipart/x-mixed-replace;boundary=frame")#send data continuously
-    except :
-        return "error"
+# @gzip.gzip_page
+# def dynamic_stream(request,stream_path="video"):
+#     try :
+#         return StreamingHttpResponse(get_frame(),content_type="multipart/x-mixed-replace;boundary=frame")#send data continuously
+#     except :
+#         return "error"
 

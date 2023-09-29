@@ -43,7 +43,7 @@ uritemplate==4.1.1
 urllib3==2.0.4
 whitenoise==6.5.0
 zope.interface==6.0
-opencv-python-headless==4.8.1.78
+opencv-python-headless
 
 
 

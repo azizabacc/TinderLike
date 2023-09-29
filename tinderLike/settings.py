@@ -188,6 +188,7 @@ STORAGES = {
 
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
+CSRF_TRUSTED_ORIGINS = ["https://tinderlike-app-17303f5e385a.herokuapp.com"]
 
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Default primary key field type

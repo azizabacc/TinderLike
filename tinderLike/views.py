@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpResponseServerError
 from django.http import JsonResponse
 from django.template import loader
 from django.contrib.auth import authenticate, login
 from .forms import UserCreationForm
 from django.contrib import messages
 from django.urls import reverse
+from django.views.decorators import gzip
+import cv2
 import requests
 import json
 import time
+
 
 def show_user(request):
 	res = requests.get("http://localhost:8000/usersList")
@@ -129,7 +132,8 @@ def match(request):
 
 def chat(request, match_id):
     id_user = request.session.get('id_user')
-    res = requests.get('http://localhost:8000/apichat/conversation/{}/'.format(match_id))
+    url=request.build_absolute_uri(reverse('api:conversation', args=[id_user]))
+    res = requests.get(url)
     chat_messages = json.loads(res.text)
 
     urlUsers =request.build_absolute_uri(reverse('api:usersMatched', args=[match_id]))
@@ -169,8 +173,9 @@ def chat(request, match_id):
             if action == 'send':
                 message_body = request.POST.get('message') 
                 print(message_body)
+                urlChat=request.build_absolute_uri(reverse('api:sendMessage', args=[id_user, match_id]))
                 res = requests.post(
-                    'http://localhost:8000/apichat/{user}/{match}/'.format(user=id_user, match=match_id),
+                    ('url'),
                     {"body": message_body, "id_user": id_user, "id_like": match_id}
                 )
             elif action == 'delete':
@@ -203,25 +208,16 @@ def profile(request):
 		picUrl = request.build_absolute_uri(reverse('api:getPicture', args=[id_user]))
 		resPicture = requests.get(picUrl)
 		if resPicture : 
-			# print(resPicture)
+			
 			dataPicture=json.loads(resPicture.text)
-			print(dataPicture)
+			
 			return render(request, 'profile.html',{"my_user": data , "my_picture" : dataPicture})
-			print(data)
+			
 		else :
 			return render(request, 'profile.html',{"my_user": data})
 
 def swagger_ui(request):
 	return render(request, 'swagger-ui.html')
-
-
-#live stream
-from django.shortcuts import render
-from django.http import HttpResponse,StreamingHttpResponse
-from django.http import HttpResponseServerError
-from django.views.decorators import gzip
-import cv2
-import time
 
 
 def get_frame():
@@ -244,3 +240,4 @@ def dynamic_stream(request,stream_path="video"):
         return StreamingHttpResponse(get_frame(),content_type="multipart/x-mixed-replace;boundary=frame")#send data continuously
     except :
         return "error"
+

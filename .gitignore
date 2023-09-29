@@ -1,4 +1,5 @@
 .env
+myNewEnv/
 tinderlike-env/
 api/__pycache__
 base/__pycache__

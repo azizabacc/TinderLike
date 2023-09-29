@@ -26,11 +26,11 @@ urlpatterns = [
     path('profilesFlow/men/<int:user_id>',views.profilesFlowMenByUserId),
 
 
-    path('chat/<int:id_user>/<int:id_like>/', views.send_message),
+    path('chat/<int:id_user>/<int:id_like>/', views.send_message, name='sendMessage'),
     path('chat/<int:message_id>/edit/', views.edit_message),
     path('chat/<int:message_id>/delete/', views.delete_message),
 
-    path('chat/conversation/<int:id_like>/', views.get_conversation),
+    path('chat/conversation/<int:id_like>/', views.get_conversation, name='conversation'),
 
 	
     

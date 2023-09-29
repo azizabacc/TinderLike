@@ -56,6 +56,5 @@ urlpatterns = [
     path('screens/', views.indexscreen, name='screens'),
     re_path(r'^(?P<stream_path>(.*?))/$',views.dynamic_stream,name="videostream"),  
     re_path(r'^stream/$',views.indexscreen),
-    static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
 
     ]

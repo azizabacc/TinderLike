@@ -19,7 +19,7 @@ config = dotenv_values(".env")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -27,7 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0nqa+hin*mc(&z=tg$i%!n8a$w(jxol*x2)$ms06he3=e)l6g0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if not IS_HEROKU_APP:
+    DEBUG = True
+else :
+    DEBUG = True
 
 ALLOWED_HOSTS = ['tinderlike-app-17303f5e385a.herokuapp.com','localhost']
 
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
     'base',
     'drf_yasg',
     'chat',
+    "whitenoise.runserver_nostatic",
     
 
 
@@ -74,13 +78,13 @@ SWAGGER_SETTINGS = {
 }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     # "whitenoise.middleware.WhiteNoiseMiddleware",
 
 ]
@@ -109,15 +113,19 @@ WSGI_APPLICATION = 'tinderLike.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-   'heroku': {
-       'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config.get("DBNAME"),
-        'USER': config.get("DBUSER"),
-        'PASSWORD': config.get("DBPASSWORD"),
-        'HOST': config.get("DBHOST"),
-        'PORT': config.get("DBPORT"),
-    },
+if not IS_HEROKU_APP:
+    DATABASES = {
+       'default': {
+           'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config.get("DBNAME"),
+            'USER': config.get("DBUSER"),
+            'PASSWORD': config.get("DBPASSWORD"),
+            'HOST': config.get("DBHOST"),
+            'PORT': config.get("DBPORT"),
+        },
+    }
+else : 
+    DATABASES = {
     'default' : {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv("DBNAME"),
@@ -125,8 +133,10 @@ DATABASES = {
         'PASSWORD': os.getenv("DBPASSWORD"),
         'HOST': os.getenv("DBHOST"),
         'PORT': os.getenv("DBPORT"),
-    }
+    },
+
 }
+print(DATABASES)
 
 
 # Password validation
@@ -168,7 +178,16 @@ STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STORAGES = {
+    # Enable WhiteNoise's GZip and Brotli compression of static assets:
+    # https://whitenoise.readthedocs.io/en/latest/django.html#add-compression-and-caching-support
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+WHITENOISE_KEEP_ONLY_HASHED_FILES = True
+
 
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Default primary key field type
@@ -176,22 +195,29 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ASGI_APPLICATION = "tinderLike.asgi.application"
-CHANNEL_LAYERS = {
-    "heroku": {
-        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
-        "CONFIG": {
-            "hosts":[{
-            "address": config.get("REDIS_URL"),  # "REDIS_TLS_URL"
-            "ssl_cert_reqs": None,
-        }]
-        },
-    },
-     "default": {
-        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
-        "CONFIG": {
-            "hosts":[{
-            "address": os.getenv("REDIS_URL"),  # "REDIS_TLS_URL"
-        }]
-        },
-    },
-}
+
+if IS_HEROKU_APP:
+    CHANNEL_LAYERS = {
+    "default": {
+    "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+    "CONFIG": {
+    "hosts":[{
+                "address": os.getenv("REDIS_URL"),  # "REDIS_TLS_URL"
+                }]
+                },
+                },
+                }
+
+else :
+    CHANNEL_LAYERS = {
+    "default": {
+    "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+    "CONFIG": {
+    "hosts":[{
+                "address": config.get("REDIS_URL"),  # "REDIS_TLS_URL"
+                "ssl_cert_reqs": None,
+                }]
+                },
+                },
+                }
+
